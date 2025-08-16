@@ -1,0 +1,38 @@
+# 忽略配置文件，包含敏感API密钥
+/example/config.txt
+
+# 忽略测试结果文件
+/example.txt
+/example_ocr_debug.txt
+
+# 保留示例图片用于README展示
+# /example/*.png
+
+# 忽略Python编译文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 忽略IDE配置文件
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 忽略系统文件
+Thumbs.db
+.DS_Store
+
+# 忽略临时文件
+/temp/
+*.tmp
+*.temp
+
+# 忽略输出文件
+/output/
+*.log
+*.out
