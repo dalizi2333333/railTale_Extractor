@@ -27,7 +27,7 @@ except ImportError:
 
 # 如果无法导入，创建临时函数下载必要文件
 if not check_and_download_available:
-    print('检测到缺少必要的库文件，正在自动下载...')
+    print('Detected missing necessary library files. Automatically downloading...')
 
     # 确保lib目录存在
     os.makedirs(lib_dir, exist_ok=True)
@@ -41,20 +41,18 @@ if not check_and_download_available:
                 f.write(response.content)
             return True
         except Exception as e:
-            print(f'下载失败: {url}, 错误: {str(e)}')
+            print(f'Failed to download: {url}, error: {str(e)}')
             return False
 
     check_and_download_path = os.path.join(lib_dir, 'check_and_download.py')
     if download_file(f'{GITHUB_BASE_URL}lib/check_and_download.py', check_and_download_path):
-        print('成功下载check_and_download.py')
-        # 尝试重新导入
-        try:
-            from check_and_download import load_language_file_with_check
-            check_and_download_available = True
-        except ImportError:
-            print('重新导入失败，请检查文件完整性')
+        print(f'Successfully downloaded to: {check_and_download_path}')
+        print('\nFirst download of check_and_download.py detected. To ensure successful import, please restart the program.')
+        print('Program will exit in 3 seconds...')
+        time.sleep(3)
+        sys.exit(0)
     else:
-        print('无法下载必要的库文件，程序将退出')
+        print('Failed to download necessary library files. Program will exit.')
         sys.exit(1)
 
 # 加载语言数据
