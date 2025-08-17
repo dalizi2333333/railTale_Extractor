@@ -2,51 +2,63 @@ import os
 import sys
 import time
 import json
+import requests
+from pathlib import Path
 
 # 获取当前脚本所在目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 获取父级目录
 parent_dir = os.path.dirname(current_dir)
 
-# 语言优先级顺序: 简体中文 -> 英语 -> 繁体中文 -> 日语
-LANGUAGE_PRIORITY = [
-    ('zh-cn.json', '简体中文'),
-    ('en.json', 'English'),
-    ('zh-tw.json', '繁体中文'),
-    ('ja-jp.json', '日本語')
-]
+# GitHub仓库基础URL
+GITHUB_BASE_URL = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/'
 
-# 加载语言文件
-def load_language_file(parent_dir):
-    lang_dir = os.path.join(parent_dir, 'lang')
-    
-    # 获取lang目录下的所有json文件
-    lang_files = [f for f in os.listdir(lang_dir) if f.lower().endswith('.json')]
-    
-    # 如果只有一个语言文件，直接加载
-    if len(lang_files) == 1:
-        lang_file = os.path.join(lang_dir, lang_files[0])
-        with open(lang_file, 'r', encoding='utf-8') as f:
-            lang_data = json.load(f)
-            lang_data['current_language'] = lang_files[0]
-            return lang_data
-    
-    # 多个语言文件，按照优先级顺序加载
-    for file_name, display_name in LANGUAGE_PRIORITY:
-        if file_name in lang_files:
-            lang_file = os.path.join(lang_dir, file_name)
-            with open(lang_file, 'r', encoding='utf-8') as f:
-                lang_data = json.load(f)
-                lang_data['current_language'] = file_name
-                return lang_data
-    
-    # 如果没有找到优先级列表中的语言文件
-    print('Error: Multiple localization files detected. Please keep only one language file.')
-    print('Priority supported language files: zh-cn.json, en.json, zh-tw.json, ja-jp.json')
-    sys.exit(1)
+# 添加lib目录到Python路径
+lib_dir = os.path.join(parent_dir, 'lib')
+if lib_dir not in sys.path:
+    sys.path.append(lib_dir)
+
+# 尝试导入检查和下载功能
+try:
+    from check_and_download import load_language_file_with_check
+    check_and_download_available = True
+except ImportError:
+    check_and_download_available = False
+
+# 如果无法导入，创建临时函数下载必要文件
+if not check_and_download_available:
+    print('检测到缺少必要的库文件，正在自动下载...')
+
+    # 确保lib目录存在
+    os.makedirs(lib_dir, exist_ok=True)
+
+    # 下载check_and_download.py
+    def download_file(url, local_path):
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            with open(local_path, 'wb') as f:
+                f.write(response.content)
+            return True
+        except Exception as e:
+            print(f'下载失败: {url}, 错误: {str(e)}')
+            return False
+
+    check_and_download_path = os.path.join(lib_dir, 'check_and_download.py')
+    if download_file(f'{GITHUB_BASE_URL}lib/check_and_download.py', check_and_download_path):
+        print('成功下载check_and_download.py')
+        # 尝试重新导入
+        try:
+            from check_and_download import load_language_file_with_check
+            check_and_download_available = True
+        except ImportError:
+            print('重新导入失败，请检查文件完整性')
+    else:
+        print('无法下载必要的库文件，程序将退出')
+        sys.exit(1)
 
 # 加载语言数据
-lang_data = load_language_file(parent_dir)
+lang_data = load_language_file_with_check(parent_dir)
 
 # 添加父级目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

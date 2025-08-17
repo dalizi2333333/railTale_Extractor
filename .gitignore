@@ -8,6 +8,9 @@
 # 保留示例图片用于README展示
 # /example/*.png
 
+# 忽略自动下载测试
+/auto_download_test/*
+
 # 忽略Python编译文件
 __pycache__/
 *.pyc
