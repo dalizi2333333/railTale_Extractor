@@ -9,6 +9,7 @@
 - 支持自定义开始和停止标记
 - 可输出OCR调试信息以便优化识别效果
 - 支持字体增强以提高识别准确率
+- 多语言支持：所有提示文本均可通过语言文件自定义，方便国际化
 
 ## 安装依赖
 1. 确保已安装Python 3.6或更高版本
@@ -19,6 +20,7 @@
 3. （可选）安装游戏字体以提高识别准确率，注意目前只接受“zh-cn.ttf”，“zh-tw.ttf”，“ja-jp.ttf”这三个字体文件名，分别对应崩坏星穹铁道本地游戏资源中的三种字体
 
 ## 使用方法
+[计划中] 未来将加入自动下载库的功能，只需下载process_images.py并运行即可自动补全其他文件，无需主动下载
 1. 克隆或下载本项目到本地
 2. 在[百度AI开放平台](https://ai.baidu.com/)注册账号并创建OCR应用，获取APP_ID、API_KEY和SECRET_KEY
 3. 复制`example/config.txt.example`文件到你想要处理图片的任意目录（例如`/path/to/project/example/`）下，并重命名为`config.txt`，然后填入你的百度OCR API密钥
@@ -29,6 +31,28 @@
    ```
    （请将`/path/to/project/example/`替换为你想要处理图片的目录）
 6. 提取结果将保存到以当前目录名称命名的文本文件中（例如，若在`example`目录运行，则保存为`example.txt`）
+
+## 多语言支持
+本项目支持多语言显示，所有提示文本均从语言文件中加载，方便进行国际化适配。
+
+### 语言文件结构
+语言文件位于`lang`目录下，采用JSON格式，文件名格式为`{language-code}.json`（例如`zh-cn.json`表示简体中文）。
+
+### 现有语言条目
+目前支持的语言条目包括：
+- 字体检测相关提示
+- 配置文件相关提示
+- 依赖库安装相关提示
+- 错误信息提示
+
+### 添加新语言
+1. 在`lang`目录下创建新的语言文件，文件名格式为`{language-code}.json`
+2. 复制`zh-cn.json`文件的内容到新文件中
+3. 将所有文本值翻译为目标语言
+4. 在代码中加载新的语言文件
+
+### 自定义语言文本
+你可以修改现有语言文件中的文本值，以满足特定需求。
 
 ## 示例展示
 ### 输入图片
@@ -69,7 +93,7 @@
 
 === 图片 1.png OCR识别结果 ===
 识别模式: 高精度
-字体类型: CHN_ENG
+识别类型: CHN_ENG
 原始识别结果: {'paragraphs_result': [{'words_result_idx': [0]}, {'words_result_idx': [1]}, {'words_result_idx': [2]}, ...], 'words_result': [{'probability': {'average': 0.9999536276, 'min': 0.9998266101, 'variance': 2.465130322e-09}, 'words': '是否跳过当前段落对话'}, ...]}
 字块详情:
   字块 1: 内容="是否跳过当前段落对话", 置信度=0.9999536276
@@ -97,7 +121,7 @@
 
 === 图片 2.png OCR识别结果 ===
 识别模式: 高精度
-字体类型: CHN_ENG
+识别类型: CHN_ENG
 原始识别结果: （略）
 字块详情:
   字块 1: 内容="是否跳过当前段落对话", 置信度=0.9999477267
@@ -116,6 +140,35 @@
 [后续及图片3.png和4.png的OCR识别结果省略]
 ```
 
+## 代码结构
+本项目采用模块化设计，代码结构清晰，便于维护和扩展。
+
+### 目录结构
+```
+├── example/              # 示例目录，包含样例图片和处理脚本
+│   ├── process_images.py # 主处理脚本
+│   └── config.txt.example # 配置文件示例
+├── lang/                 # 语言文件目录
+│   └── *.json            # 语言文件，例如zh-cn.json
+├── lib/                  # 库目录，包含各种功能模块
+│   ├── __init__.py       # 包初始化文件
+│   ├── config.py         # 配置文件处理模块
+│   ├── dependency_check.py # 依赖库检查模块
+│   ├── font_enhancement.py # 字体增强模块
+│   └── ocr_language_mapping.json # OCR语言映射文件
+├── README.md             # 项目说明文档
+└── zh-cn.ttf             # 默认字体文件
+```
+
+### 模块功能说明
+- `process_images.py`: 主处理脚本，负责图片处理流程控制
+- `lib/config.py`: 配置文件读取和解析模块
+- `lib/dependency_check.py`: 依赖库检查模块
+- `lib/font_enhancement.py`: 字体增强模块，用于提高OCR识别准确率
+- `lib/ocr_language_mapping.json`: OCR语言映射文件，定义了语言代码与百度OCR API语言参数的对应关系
+
+
+
 ## 配置说明
 配置文件`example/config.txt`包含以下参数：
 - `APP_ID`：百度AI平台账号的APP_ID
@@ -124,17 +177,6 @@
 - `OUTPUT_OCR_DEBUG`：是否输出OCR调试信息到独立文件（true/false）
 - `START_MARKERS`：开始标记，当检测到这些文字块时开始记录文本（多个标记用逗号分隔）
 - `STOP_MARKERS`：结束标记，当检测到这些文字块时停止记录文本（多个标记用逗号分隔）
-
-## 项目结构
-```
-├── example/           # 示例目录（包含示例图片和配置文件）
-│   ├── config.txt.example  # 配置文件示例
-│   ├── process_images.py  # 主程序脚本
-│   └── *.png          # 示例游戏截图
-├── .gitignore         # Git忽略文件
-├── *.ttf              # 增强识别字体文件
-└── README.md          # 项目说明文档
-```
 
 ## 注意事项
 1. 本工具依赖百度OCR API，请确保你已获得有效的API密钥

@@ -1,0 +1,28 @@
+{
+    "language_mapping": {
+        "zh-cn.json": "CHN_ENG",
+        "zh-tw.json": "CHN_ENG",
+        "ja-jp.json": "JAP",
+        "en-us.json": "ENG",
+        "en-gb.json": "ENG"
+    },
+    "supported_fonts": [
+        {
+            "file_name": "zh-cn.ttf",
+            "ocr_language": "CHN_ENG"
+        },
+        {
+            "file_name": "zh-tw.ttf",
+            "ocr_language": "CHN_ENG"
+        },
+        {
+            "file_name": "ja-jp.ttf",
+            "ocr_language": "JAP"
+        },
+        {
+            "file_name": "en.ttf",
+            "ocr_language": "ENG"
+        }
+    ],
+    "default_ocr_language": "ENG"
+}

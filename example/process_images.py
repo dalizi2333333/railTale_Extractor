@@ -1,178 +1,76 @@
 import os
 import sys
 import time
+import json
 
 # 获取当前脚本所在目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 获取父级目录
 parent_dir = os.path.dirname(current_dir)
 
-# 检测父级目录中是否存在支持的字体文件
-supported_fonts = [
-    ('zh-cn.ttf', 'CHN_ENG'),  # 简体中文
-    ('zh-tw.ttf', 'CHN_ENG'),  # 繁体中文
-    ('ja-jp.ttf', 'JAP')       # 日语
+# 语言优先级顺序: 简体中文 -> 英语 -> 繁体中文 -> 日语
+LANGUAGE_PRIORITY = [
+    ('zh-cn.json', '简体中文'),
+    ('en.json', 'English'),
+    ('zh-tw.json', '繁体中文'),
+    ('ja-jp.json', '日本語')
 ]
 
-use_custom_font = False
-font_path = None
-font_language = 'CHN_ENG'
+# 加载语言文件
+def load_language_file(parent_dir):
+    lang_dir = os.path.join(parent_dir, 'lang')
+    
+    # 获取lang目录下的所有json文件
+    lang_files = [f for f in os.listdir(lang_dir) if f.lower().endswith('.json')]
+    
+    # 如果只有一个语言文件，直接加载
+    if len(lang_files) == 1:
+        lang_file = os.path.join(lang_dir, lang_files[0])
+        with open(lang_file, 'r', encoding='utf-8') as f:
+            lang_data = json.load(f)
+            lang_data['current_language'] = lang_files[0]
+            return lang_data
+    
+    # 多个语言文件，按照优先级顺序加载
+    for file_name, display_name in LANGUAGE_PRIORITY:
+        if file_name in lang_files:
+            lang_file = os.path.join(lang_dir, file_name)
+            with open(lang_file, 'r', encoding='utf-8') as f:
+                lang_data = json.load(f)
+                lang_data['current_language'] = file_name
+                return lang_data
+    
+    # 如果没有找到优先级列表中的语言文件
+    print('Error: Multiple localization files detected. Please keep only one language file.')
+    print('Priority supported language files: zh-cn.json, en.json, zh-tw.json, ja-jp.json')
+    sys.exit(1)
 
-# 检查父目录中存在的字体文件数量
-found_fonts = []
-for font_file, language in supported_fonts:
-    current_font_path = os.path.join(parent_dir, font_file)
-    if os.path.exists(current_font_path):
-        found_fonts.append((font_file, language, current_font_path))
+# 加载语言数据
+lang_data = load_language_file(parent_dir)
 
-# 如果只找到一个字体文件，则使用它
-if len(found_fonts) == 1:
-    font_file, language, current_font_path = found_fonts[0]
-    use_custom_font = True
-    font_path = current_font_path
-    font_language = language
-elif len(found_fonts) > 1:
-    print('警告: 父目录中存在多个字体文件，将不启用字体增强识别功能')
-    print('      请确保父目录中只存在一种字体文件: zh-cn.ttf, zh-tw.ttf 或 ja-jp.ttf')
+# 添加父级目录到Python路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# 必要的库
-required_libraries = [
-    ('PIL', 'Pillow'),
-    ('chardet', 'chardet'),
-    ('aip', 'baidu-aip'),
-]
+# 导入字体增强检测函数
+from lib.font_enhancement import detect_font_enhancement
 
-# 根据是否使用自定义字体设置OCR参数
-if use_custom_font:
-    print(f'检测到字体文件: {font_path}，将使用该字体提高OCR识别精度')
-else:
-    print('未检测到支持的字体文件，使用默认字体设置')
+# 检测字体增强
+use_custom_font, font_path, ocr_language, found_fonts = detect_font_enhancement(parent_dir, lang_data)
 
 # 检查必要的库是否安装
-missing_libraries = []
-for lib_name, pip_name in required_libraries:
-    try:
-        __import__(lib_name)
-        # 验证导入是否成功
-        module = sys.modules.get(lib_name)
-        if module is None:
-            raise ImportError(f"无法加载模块 {lib_name}")
-        print(f"成功导入 {lib_name}")  # 调试信息
-    except ImportError as e:
-        missing_libraries.append((lib_name, pip_name))
-        print(f"导入失败 {lib_name}: {str(e)}")  # 调试信息
-
-if missing_libraries:
-    print('错误: 缺少必要的Python库')
-    # 打印Python环境信息
-    print(f'当前Python解释器路径: {sys.executable}')
-    print(f'Python版本: {sys.version}')
-    print('Python路径:')
-    for path in sys.path:
-        print(f'  - {path}')
-    
-    for lib_name, pip_name in missing_libraries:
-        print(f'  - {lib_name} (推荐使用命令安装: pip install {pip_name})')
-    print('\n安装提示:')
-    print('1. 首先必须更新pip到最新版本(安装opencv-python必需):')
-    print('   python -m pip install --upgrade pip')
-    print('2. 如果安装失败，可能是网络问题，建议使用国内镜像源:')
-    for _, pip_name in missing_libraries:
-        if pip_name == 'opencv-python':
-            print(f'   pip install -i https://mirrors.aliyun.com/pypi/simple/ {pip_name} --no-binary :all:')
-        else:
-            print(f'   pip install -i https://mirrors.aliyun.com/pypi/simple/ {pip_name}')
-    print('3. 安装opencv-python时如果遇到编码错误，尝试设置环境变量:')
-    print('   set PYTHONUTF8=1')
-    print('   或者在命令前添加:')
-    print('   $env:PYTHONUTF8=1  (PowerShell)')
-    print('4. Windows用户如果遇到权限问题，请以管理员身份运行命令提示符')
-    print('5. macOS/Linux用户如果遇到权限问题，尝试使用sudo:')
-    for _, pip_name in missing_libraries:
-        print(f'   sudo pip install {pip_name}')
-    print('6. 确保使用的Python环境与安装库时的环境一致')
-    sys.exit(1)
+from lib.dependency_check import check_dependencies
+check_dependencies(lang_data)
 
 # 导入必要的库
 from PIL import Image
 from aip import AipOcr
-
-# 已完全移除图像预处理相关代码
+import requests
 
 # 读取配置文件函数
-def read_config():
-    # 配置文件路径
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.txt')
-    
-    # 检查配置文件是否存在，如果不存在则创建
-    if not os.path.exists(config_path):
-        print('配置文件config.txt不存在，正在创建...')
-        # 配置文件不存在时的默认内容
-        config_content = """# 百度OCR API配置文件
-# 请将以下参数替换为您自己的密钥
-
-# 百度AI平台账号的APP_ID
-APP_ID = '你的APP_ID'
-
-# 百度AI平台账号的API_KEY
-API_KEY = '你的API_KEY'
-
-# 百度AI平台账号的SECRET_KEY
-SECRET_KEY = '你的SECRET_KEY'
-
-# 是否输出OCR调试信息到独立文件
-# 可选值: true, false
-OUTPUT_OCR_DEBUG = 'false'
-
-# OCR文本提取标记配置
-# 开始标记: 当检测到这些文字块时开始记录每张图片内识别到的文本，多个标记用逗号分隔
-START_MARKERS = '剧情梗概'
-
-# 结束标记: 当检测到这些文字块时停止记录每张图片内识别到的文本，多个标记用逗号分隔
-STOP_MARKERS = 'i,存在分支剧情选项,取消,×,⑧取消'
-
-# 配置说明：
-# 1. 访问 https://ai.baidu.com/ 注册账号并创建OCR应用
-# 2. 在应用详情页获取APP_ID、API_KEY和SECRET_KEY
-# 3. 将获取到的密钥填入上面的对应字段中
-# 4. 如需输出OCR调试信息，将OUTPUT_OCR_DEBUG设置为'true'
-# 5. 可根据需要修改START_MARKERS和STOP_MARKERS来调整文本提取的起始和结束条件
-# 6. 保存文件后，运行process_images.py脚本"""
-        with open(config_path, 'w', encoding='utf-8') as f:
-            f.write(config_content)
-        print(f'配置文件已创建: {config_path}')
-        print('请编辑该文件并填入您的百度OCR API密钥，然后重新运行脚本')
-        sys.exit(1)
-    
-    # 读取配置文件
-    config = {}
-    try:
-        with open(config_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                # 跳过注释和空行
-                if line.strip().startswith('#') or not line.strip():
-                    continue
-                # 解析配置项
-                if '=' in line:
-                    key, value = line.split('=', 1)
-                    key = key.strip()
-                    value = value.strip().strip("'").strip('"')
-                    config[key] = value
-    except Exception as e:
-        print(f'读取配置文件出错: {str(e)}')
-        sys.exit(1)
-    
-    # 检查必要的配置项是否存在
-    required_keys = ['APP_ID', 'API_KEY', 'SECRET_KEY']
-    for key in required_keys:
-        if key not in config:
-            print(f'错误: 配置文件中缺少必要的项 {key}')
-            sys.exit(1)
-    
-    return config
+from lib.config import read_config
 
 # 读取配置
-config = read_config()
+config = read_config(lang_data)
 APP_ID = config['APP_ID']
 API_KEY = config['API_KEY']
 SECRET_KEY = config['SECRET_KEY']
@@ -189,7 +87,7 @@ client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
 # 配置可选参数，优化识别精度
 options = {
-    'language_type': font_language,  # 根据字体类型设置语言
+    'language_type': ocr_language,  # 根据字体和语言文件设置OCR语言
     'detect_direction': 'true',      # 检测方向
     'detect_language': 'true',       # 检测语言
     'probability': 'true',           # 返回置信度
@@ -224,8 +122,7 @@ suspected_dash_files = []  # 存储包含疑似破折号的图片文件名
 
 # 检查百度OCR配置是否完整
 if not (APP_ID and API_KEY and SECRET_KEY) or APP_ID == '你的APP_ID':
-    print('错误: 请先在config.txt中配置百度OCR API的APP_ID、API_KEY和SECRET_KEY')
-    print('获取方法: 访问https://ai.baidu.com/，注册账号并创建OCR应用')
+    print(lang_data['ocr_api_config_prompt'])
     sys.exit(1)
 
 try:
@@ -277,8 +174,8 @@ try:
                 if output_ocr_debug:
                     debug_entry = f"=== 图片 {file_name} OCR识别结果 ===\n"
                     debug_entry += f"识别模式: {'高精度' if use_custom_font else '通用'}\n"
-                    debug_entry += f"字体类型: {font_language}\n"
-                    debug_entry += f"原始识别结果: {result}\n"
+                    debug_entry += f"识别类型: {ocr_language}\n"
+                    debug_entry += f"原始识别结果: {json.dumps(result, ensure_ascii=False)}\n"
                     debug_entry += "字块详情:\n"
 
                 # 分析每个文字块的内容
@@ -373,15 +270,11 @@ try:
         else:
             # 区分没有字体文件和存在多个字体文件的情况
             if len(found_fonts) == 0:
-                f.write('\n提示：未检测到自定义字体文件，推荐在游戏资源文件中找到以下ttf字体文件并放在父目录:\n')
-                f.write('      - zh-cn.ttf (简体中文)\n')
-                f.write('      - zh-tw.ttf (繁体中文)\n')
-                f.write('      - ja-jp.ttf (日语，安装后将启用日语文字识别)\n')
-                f.write('      加载对应字体文件可有效提高OCR识别准确率，特别是避免破折号(——)被错误识别为(一一)的问题。\n')
+                # 使用语言文件中的提示
+                f.write('\n' + lang_data['font_not_detected'] + '\n')
             elif len(found_fonts) > 1:
-                f.write('\n警告：父目录中存在多个字体文件，不启用字体增强识别功能。\n')
-                f.write('      请确保父目录中只存在一种字体文件: zh-cn.ttf, zh-tw.ttf 或 ja-jp.ttf\n')
-                f.write('      当前检测到的字体文件: ' + ', '.join([font[0] for font in found_fonts]) + '\n')
+                # 使用语言文件中的警告
+                f.write('\n' + lang_data['multiple_fonts_warning'].format(', '.join([font[0]['file_name'] for font in found_fonts])) + '\n')
 
     # 写入OCR调试信息文件
     if output_ocr_debug:
@@ -420,16 +313,12 @@ try:
     else:
         # 区分没有字体文件和存在多个字体文件的情况
         if len(found_fonts) == 0:
-            print('\n提示：未检测到自定义字体文件，推荐在游戏资源文件中找到以下ttf字体文件并放在父目录:')
-            print('      - zh-cn.ttf (简体中文)')
-            print('      - zh-tw.ttf (繁体中文)')
-            print('      - ja-jp.ttf (日语，安装后将启用日语文字识别)')
-            print('      加载对应字体文件可有效提高OCR识别准确率，特别是避免破折号(——)被错误识别为(一一)的问题。')
+            # 使用语言文件中的提示
+            print('\n' + lang_data['font_not_detected'])
         elif len(found_fonts) > 1:
-            print('\n警告：父目录中存在多个字体文件，不启用字体增强识别功能。')
-            print('      请确保父目录中只存在一种字体文件: zh-cn.ttf, zh-tw.ttf 或 ja-jp.ttf')
-            print('      当前检测到的字体文件: ' + ', '.join([font[0] for font in found_fonts]))
+            # 使用语言文件中的警告
+            print('\n' + lang_data['multiple_fonts_warning'].format(', '.join([font[0]['file_name'] for font in found_fonts])))
 
 except Exception as e:
-    print(f'脚本执行出错: {str(e)}')
+    print(lang_data['script_execution_error'].format(str(e)))
     sys.exit(1)
