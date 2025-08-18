@@ -1,7 +1,7 @@
 # 崩坏星穹铁道剧情梗概提取器
 
 ## 项目简介
-这是一个基于百度OCR API的工具，用于从崩坏星穹铁道游戏截图中提取剧情梗概文本。工具会自动识别图片中的文本，提取从"剧情梗概"开始到遇到特定停止标记（如"存在分支剧情选项"、"取消"等）的内容。
+这是一个利用OCR技术，从崩坏星穹铁道游戏截图中提取剧情梗概文本。工具会自动识别图片中的文本，提取从"剧情梗概"开始到遇到特定停止标记（如"存在分支剧情选项"、"取消"等）的内容。
 
 ## 功能特点
 - 自动识别游戏截图中的文本
@@ -10,33 +10,31 @@
 - 可输出OCR调试信息以便优化识别效果
 - 支持字体增强以提高识别准确率
 - 多语言支持：所有提示文本均可通过语言文件自定义，方便国际化
+- 支持多种OCR API，未来可能会开发更多OCR模块
+- 支持将多张截图放到一起同时识别，节省资源消耗
+- 可以只下载一个脚本文件，脚本会自动下载其他文件
 
 ## 安装依赖
 1. 确保已安装Python 3.6或更高版本
 2. 安装必要的Python库：
    ```bash
-   pip install Pillow chardet baidu-aip
+   pip install Pillow chardet 
    ```
-3. （可选）安装游戏字体以提高识别准确率，注意目前只接受“zh-cn.ttf”，“zh-tw.ttf”，“ja-jp.ttf”这三个字体文件名，分别对应崩坏星穹铁道本地游戏资源中的三种字体
+3. 不同的OCR API需要安装不同的库，程序会自动提示需要的库
+4. （可选）安装游戏字体以提高识别准确率，注意目前只接受“zh-cn.ttf”，“zh-tw.ttf”，“ja-jp.ttf”这三个字体文件名，分别对应崩坏星穹铁道本地游戏资源中的三种字体
 
-## 使用方法
-[基本完成] 未来将加入自动下载库的功能，只需下载主脚本并运行即可自动尝试补全其他文件，由于python的特性，无法一次启动就补全所有文件，需要手动运行一次脚本后，再手动运行一次脚本，即可自动运行处理。在处理上传图片的功能也模块化后，将正式更新这个使用方法，但现在确实也能这么用就是了
-1. 克隆或下载本项目到本地
+## 使用方法（还没测试）
+1. 下载脚本文件`process_images.py`到你存放游戏截图的目录
 2. 在[百度AI开放平台](https://ai.baidu.com/)注册账号并创建OCR应用，获取APP_ID、API_KEY和SECRET_KEY
-3. 复制`example/config.txt.example`文件到你想要处理图片的任意目录（例如`/path/to/project/example/`）下，并重命名为`config.txt`，然后填入你的百度OCR API密钥
-4. 将游戏截图放入你选择的目录
-5. 在该目录下运行脚本：
-   ```bash
-   python /path/to/project/example/process_images.py
-   ```
-   （请将`/path/to/project/example/`替换为你想要处理图片的目录）
-6. 提取结果将保存到以当前目录名称命名的文本文件中（例如，若在`example`目录运行，则保存为`example.txt`）
+3. 运行脚本`process_images.py`，补全库里最基本的文件，再次启动，补全完整的lib目录，然后在`脚本父级所在目录/lib/ocr_modules/你选择的OCR模块/config.txt`内填入你的OCR API密钥
+4. 再次运行脚本`process_images.py`，即可开始识别截图
+5. 提取结果将保存到以当前目录名称命名，目录旁的文本文件中（例如，若在`.../example`目录运行，则保存为`.../example.txt`）
 
 ## 多语言支持
 本项目支持多语言显示，所有提示文本均从语言文件中加载，方便进行国际化适配。
 
 ### 语言文件结构
-语言文件位于`lang`目录下，采用JSON格式，文件名格式为`{language-code}.json`（例如`zh-cn.json`表示简体中文）。
+语言文件位于`脚本父级所在目录/lib/lang`目录下，采用JSON格式，文件名格式为`{language-code}.json`（例如`zh-cn.json`表示简体中文）。
 
 ### 现有语言条目
 目前支持的语言条目包括：
@@ -46,7 +44,7 @@
 - 错误信息提示
 
 ### 添加新语言
-1. 在`lang`目录下创建新的语言文件，文件名格式为`{language-code}.json`
+1. 在`lib/lang`目录下创建新的语言文件，文件名格式为`{language-code}.json`
 2. 复制`zh-cn.json`文件的内容到新文件中
 3. 将所有文本值翻译为目标语言
 4. 在代码中加载新的语言文件
@@ -145,43 +143,78 @@
 
 ### 目录结构
 ```
+├── .gitignore            # Git忽略文件
+├── LICENSE               # 许可证文件
+├── README.md             # 项目说明文档
 ├── example/              # 示例目录，包含样例图片和处理脚本
-│   ├── process_images.py # 主处理脚本
-│   └── config.txt.example # 配置文件示例
-├── lang/                 # 语言文件目录
-│   └── *.json            # 语言文件，例如zh-cn.json
+│   ├── 1.png             # 示例图片1
+│   ├── 2.png             # 示例图片2
+│   ├── 3.png             # 示例图片3
+│   ├── 4.png             # 示例图片4
+│   └── process_images.py # 主处理脚本
 ├── lib/                  # 库目录，包含各种功能模块
 │   ├── __init__.py       # 包初始化文件
-│   ├── config.py         # 配置文件处理模块
+│   ├── bootstrap.py      # 引导程序模块
+│   ├── config/           # 配置管理目录
+│   │   ├── __init__.py   # 配置包初始化文件
+│   │   ├── base_config.py # 基础配置定义
+│   │   ├── config_generator.py # 配置生成器
+│   │   ├── config_loader.py # 配置加载器
+│   │   ├── config_manager.py # 配置管理器
+│   │   └── module_config.py # 模块配置
 │   ├── dependency_check.py # 依赖库检查模块
 │   ├── font_enhancement.py # 字体增强模块
-│   └── ocr_language_mapping.json # OCR语言映射文件
-├── README.md             # 项目说明文档
+│   ├── lang/             # 语言文件目录
+│   │   ├── en.json       # 英文语言文件
+│   │   └── zh-cn.json    # 中文语言文件
+│   ├── ocr_core/         # OCR核心模块
+│   │   ├── __init__.py   # OCR核心包初始化
+│   │   ├── ocr_module.py # OCR模块基类
+│   │   ├── ocr_module_interface.py # OCR模块接口
+│   │   └── ocr_module_registry.py # OCR模块注册表
+│   ├── ocr_language_mapping.json # OCR语言映射文件
+│   ├── ocr_module_loader.py # OCR模块加载器
+│   ├── ocr_modules/      # OCR模块目录
+│   │   └── baidu/        # 百度OCR模块目录
+│   │       ├── lang/     # 语言文件目录
+│   │       │   ├── en.json # 英文语言文件
+│   │       │   └── zh-cn.json # 中文语言文件
+│   │       ├── __init__.py # 百度OCR模块包初始化
+│   │       ├── baidu_ocr_module.py # 百度OCR模块
+│   │       ├── baidu_ocr_config.py # 百度OCR模块配置
+│   │       └── baidu_ocr_api.py # 百度OCR模块API
+│   ├── text_processing/  # 文本处理模块
+│   │   ├── __init__.py   # 文本处理包初始化
+│   │   └── text_processor.py # 文本处理器
+│   └── text_processing_loader.py # 文本处理加载器
 └── zh-cn.ttf             # 默认字体文件
+
 ```
 
 ### 模块功能说明
 - `process_images.py`: 主处理脚本，负责图片处理流程控制
-- `lib/config.py`: 配置文件读取和解析模块
+- `lib/config/*`: 配置文件读取和解析模块，包含基础配置、模块配置、配置生成器、配置加载器、配置管理器
 - `lib/dependency_check.py`: 依赖库检查模块
 - `lib/font_enhancement.py`: 字体增强模块，用于提高OCR识别准确率
-- `lib/ocr_language_mapping.json`: OCR语言映射文件，定义了语言代码与百度OCR API语言参数的对应关系
-
-
+- `lib/ocr_language_mapping.json`: OCR语言映射文件，定义了语言代码与OCR API语言参数的对应关系
+- `lib/ocr_modules/*`: OCR模块目录，包含不同OCR引擎的实现，如百度OCR、Tesseract等
+- `lib/text_processing/*`: 文本处理模块，包含文本处理函数和类，如文本清理、格式化等
+- `lib/text_processing_loader.py`: 文本处理加载器，负责加载文本处理模块
+- `lib/ocr_core/*`: OCR模块核心，用于支持不同的OCR API
+- `lib/ocr_module_loader.py`: OCR模块加载器，负责加载OCR模块
 
 ## 配置说明
 配置文件`example/config.txt`包含以下参数：
-- `APP_ID`：百度AI平台账号的APP_ID
-- `API_KEY`：百度AI平台账号的API_KEY
-- `SECRET_KEY`：百度AI平台账号的SECRET_KEY
 - `OUTPUT_OCR_DEBUG`：是否输出OCR调试信息到独立文件（true/false）
 - `START_MARKERS`：开始标记，当检测到这些文字块时开始记录文本（多个标记用逗号分隔）
 - `STOP_MARKERS`：结束标记，当检测到这些文字块时停止记录文本（多个标记用逗号分隔）
+- `OCR_MODULE`：OCR API选择（默认baidu）
+- `MAX_VERTICAL_IMAGES`：纵向拼接识别的最大图片数量（默认4）
+- `OCR_LANGUAGE`：OCR识别语言（默认zh-cn）
 
 ## 注意事项
-1. 本工具依赖百度OCR API，请确保你已获得有效的API密钥
-2. 可将游戏字体文件（如zh-cn.ttf）放入你想要处理图片的目录的父级目录（例如上述示例的`/path/to/project/`）以提高识别准确率
-3. 免费的百度OCR API有调用次数限制，请合理使用
+1. 可将游戏字体文件（如zh-cn.ttf）放入你想要处理图片的目录的父级目录（例如上述示例的`/path/to/project/`）以提高识别准确率
+2. OCR API一般有免费调用次数限制，请合理使用
 
 ## 贡献
 欢迎提交Issue和Pull Request来改进这个工具。

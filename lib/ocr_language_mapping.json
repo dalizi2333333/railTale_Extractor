@@ -3,6 +3,7 @@
         "zh-cn.json": "CHN_ENG",
         "zh-tw.json": "CHN_ENG",
         "ja-jp.json": "JAP",
+        "en.json": "ENG",
         "en-us.json": "ENG",
         "en-gb.json": "ENG"
     },

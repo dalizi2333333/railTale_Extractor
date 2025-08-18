@@ -1,6 +1,8 @@
-# 忽略配置文件，包含敏感API密钥
-/example/config.txt
+# 忽略配置文件，能自动生成
+config.txt
 
+# 忽略测试脚本
+test*.py
 # 忽略测试结果文件
 /example.txt
 /example_ocr_debug.txt
@@ -10,6 +12,9 @@
 
 # 忽略自动下载测试
 /auto_download_test/*
+
+# 忽略modified_require.txt文件
+modified_require.txt
 
 # 忽略Python编译文件
 __pycache__/
