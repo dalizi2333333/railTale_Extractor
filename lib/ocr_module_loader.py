@@ -28,7 +28,7 @@ class OCRModuleLoader:
         if self.config is None:
             self.config = self.load_config()
             
-        self.module_name = self.config.get('OCR_MODULE', DEFAULT_MODULE_NAME)
+        self.module_name = self.config.get('ocr_module', DEFAULT_MODULE_NAME)
         
         # 为baidu模块注册依赖
         # 动态导入模块依赖注册函数

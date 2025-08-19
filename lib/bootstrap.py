@@ -151,9 +151,11 @@ class LocalizationManager:
             import logging
             logging.error(self.lang_data['ocr_mapping_load_fail'].format(str(e)))
 
-    def _download_file_from_github(self, github_path, local_path):
-        """从GitHub下载文件，支持重试机制"""
-        url = f'{GITHUB_BASE_URL}{github_path}'
+    def _download_file_from_github(self, github_path, local_path , download_url = None ):
+        """从链接下载文件，支持重试机制"""
+        if download_url == None:
+            download_url = GITHUB_BASE_URL
+        url = f'{download_url}{github_path}'
         print(self.lang_data['downloading_file'].format(url))
 
         max_retries = 3
