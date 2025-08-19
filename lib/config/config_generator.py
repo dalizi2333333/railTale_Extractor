@@ -12,7 +12,7 @@ try:
     # 创建LocalizationManager实例
     loc_manager = LocalizationManager()
     lang_data = loc_manager.get_lang_data()
-    print(lang_data.get("import_bootstrap_success"))
+    print(lang_data.get("import_bootstrap_success", "导入bootstrap模块成功"))
 except ImportError as e:
     # 尝试使用默认错误消息
     print(f"导入bootstrap模块失败: {str(e)}")

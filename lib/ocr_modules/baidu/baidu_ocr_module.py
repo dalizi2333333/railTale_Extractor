@@ -8,10 +8,12 @@ from .lang_utils import BaiduOCRLangUtils
 class BaiduOCRConfig:
     """百度OCR的配置类"""
 
-    def __init__(self, app_id, api_key, secret_key):
+    def __init__(self, app_id, api_key, secret_key, test_mode=False, simulated_ocr_text=''):
         self.app_id = app_id
         self.api_key = api_key
         self.secret_key = secret_key
+        self.test_mode = test_mode
+        self.simulated_ocr_text = simulated_ocr_text
         self.api_delay = 1.5  # API调用之间的延迟时间(秒) - 固定值
         self.max_width = 8192  # 最大支持的图片宽度(像素) - 固定值
         self.max_height = 8192  # 最大支持的图片高度(像素) - 固定值
@@ -20,10 +22,15 @@ class BaiduOCRConfig:
         return {
             'app_id': self.app_id,
             'api_key': self.api_key,
-            'secret_key': self.secret_key
+            'secret_key': self.secret_key,
+            'test_mode': self.test_mode,
+            'simulated_ocr_text': self.simulated_ocr_text
         }
 
     def is_valid(self):
+        # 如果是测试模式，配置视为有效
+        if self.test_mode:
+            return True
         return all([
             self.app_id and self.app_id != 'your_app_id',
             self.api_key and self.api_key != 'your_api_key',
@@ -50,12 +57,13 @@ class BaiduOCRModule(OCRModuleInterface):
             config_manager = ConfigManager()
             module_config = config_manager.get_module_config('baidu')
 
-            # 从模块配置中获取必要的API凭证
+            # 从模块配置中获取必要的API凭证和测试模式配置
             self.config = BaiduOCRConfig(
                 app_id=module_config.get('baidu_app_id', ''),
                 api_key=module_config.get('baidu_api_key', ''),
                 secret_key=module_config.get('baidu_secret_key', ''),
-
+                test_mode=module_config.get('test_mode', False),
+                simulated_ocr_text=module_config.get('simulated_ocr_text', '这是模拟的OCR识别结果文本')
             )
             return self.config is not None
         except Exception as e:
@@ -101,6 +109,18 @@ class BaiduOCRModule(OCRModuleInterface):
                 return None
 
         try:
+            # 如果是测试模式，直接返回模拟文本
+            if self.config.test_mode:
+                print(f"百度OCR模块(测试模式): 正在处理图片 {os.path.basename(image_path)}")
+                # 收集调试信息
+                self.last_recognition_debug_info = {
+                    'options': options or {},
+                    'result': {'words_result': [{'words': self.config.simulated_ocr_text}]},
+                    'image_path': image_path,
+                    'test_mode': True
+                }
+                return self.config.simulated_ocr_text
+
             with open(image_path, 'rb') as f:
                 image_data = f.read()
 

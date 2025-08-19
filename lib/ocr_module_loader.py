@@ -31,9 +31,22 @@ class OCRModuleLoader:
         self.module_name = self.config.get('OCR_MODULE', DEFAULT_MODULE_NAME)
         
         # 为baidu模块注册依赖
-        if self.module_name == 'baidu_ocr':
-            from lib.ocr_modules.baidu import register_baidu_dependencies
-            register_baidu_dependencies(dependency_checker)
+        # 动态导入模块依赖注册函数
+        try:
+            # 构建模块路径和注册函数名称
+            module_path = f'lib.ocr_modules.{self.module_name}'
+            register_func_name = f'register_{self.module_name}_dependencies'
+            
+            # 尝试导入模块
+            module = __import__(module_path, fromlist=[register_func_name])
+            register_func = getattr(module, register_func_name, None)
+            
+            # 如果找到注册函数，则调用
+            if register_func:
+                register_func(dependency_checker)
+        except ImportError:
+            # 模块不存在，ocr_core会处理自动下载
+            pass
             
         return True
 
