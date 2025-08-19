@@ -8,12 +8,16 @@ if library_dir not in sys.path:
 
 try:
     from bootstrap import LocalizationManager
-    print(self._lang_data.get("import_bootstrap_success"))
+    # 创建LocalizationManager实例
+    loc_manager = LocalizationManager()
+    lang_data = loc_manager.get_lang_data()
+    print(lang_data.get("import_bootstrap_success"))
 except ImportError as e:
-    print(self._lang_data.get("import_bootstrap_fail").format(str(e)))
-    print(self._lang_data.get("current_directory").format(os.getcwd()))
-    print(self._lang_data.get("python_path").format(sys.path))
-    print(self._lang_data.get("program_exit"))
+    # 尝试使用默认错误消息
+    print(f"导入bootstrap模块失败: {str(e)}")
+    print(f"当前目录: {os.getcwd()}")
+    print(f"Python路径: {sys.path}")
+    print("程序将退出...")
     sys.exit(1)
 
 from .base_config import CONFIG_DEFINITIONS, MODULE_CONFIG_REGISTRY

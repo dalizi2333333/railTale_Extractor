@@ -43,7 +43,8 @@ DIRECTORY_STRUCTURE = {
                     '__init__.py',
                     'text_processor.py'
                 ]
-            }
+            },
+            'ocr_modules': {}
         }
     }
 }
@@ -197,14 +198,18 @@ class LocalizationManager:
             os.makedirs(lang_dir, exist_ok=True)
             print(f"Directory created: {lang_dir}")
 
-        # 检查lib/lang目录中的语言文件
-        if not [f for f in os.listdir(lang_dir) if f.lower().endswith('.json')]:
-            raise FileNotFoundError(f"No language files found in {lang_dir}")
-
         # 检查lang目录中的语言文件
         lang_files = [f for f in os.listdir(lang_dir) if f.lower().endswith('.json')]
 
-        # 如果有语言文件
+        # 如果没有语言文件，尝试下载默认语言文件
+        if not lang_files:
+            print(self.lang_data['lang_files_not_found'])
+            self.current_lang_file = LANGUAGE_PRIORITY[0][0]
+            file_path = os.path.join(lang_dir, self.current_lang_file)
+            self._download_file_from_github(f'lib/lang/{self.current_lang_file}', file_path)
+            lang_files = [self.current_lang_file]
+
+        # 加载语言文件
         if lang_files:
             # 如果只有一个语言文件，直接加载
             if len(lang_files) == 1:

@@ -17,8 +17,12 @@ GITHUB_BASE_URL = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extr
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
+# 创建lib目录（如果不存在）
+lib_dir = os.path.join(parent_dir, 'lib')
+os.makedirs(lib_dir, exist_ok=True)
+
 # 检查bootstrap.py是否存在
-bootstrap_path = os.path.join(parent_dir, 'lib', 'bootstrap.py')
+bootstrap_path = os.path.join(lib_dir, 'bootstrap.py')
 if not os.path.exists(bootstrap_path):
     print('Bootstrap module not found. Downloading from GitHub...')
     try:
