@@ -10,8 +10,9 @@ loc_manager = LocalizationManager.get_instance()
 class OCRModuleLoader:
     """OCR模块加载器，负责OCR模块的加载和初始化"""
 
-    def __init__(self, parent_dir):
+    def __init__(self, parent_dir, process_dir=None):
         self.parent_dir = parent_dir
+        self.process_dir = process_dir
         self.ocr_module = None
         self.use_custom_font = False
         self.font_path = None
@@ -30,7 +31,6 @@ class OCRModuleLoader:
             
         self.module_name = self.config.get('ocr_module', DEFAULT_MODULE_NAME)
         
-        # 为baidu模块注册依赖
         # 动态导入模块依赖注册函数
         try:
             # 构建模块路径和注册函数名称
@@ -61,7 +61,7 @@ class OCRModuleLoader:
 
     def load_config(self):
         """加载配置"""
-        config_manager = ConfigManager()
+        config_manager = ConfigManager(process_dir=self.process_dir)
         return config_manager.get_config()
 
     def initialize_ocr_module(self, config=None):
@@ -151,9 +151,9 @@ class OCRModuleLoader:
         return text
 
 
-def load_ocr_module(parent_dir):
+def load_ocr_module(parent_dir, process_dir=None):
     """加载OCR模块的便捷函数"""
-    loader = OCRModuleLoader(parent_dir)
+    loader = OCRModuleLoader(parent_dir, process_dir)
     loader.initialize_font_enhancement()
     use_custom_font, font_path, ocr_language, found_fonts = loader.get_font_enhancement_status()
     ocr_module = loader.initialize_ocr_module()

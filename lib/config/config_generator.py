@@ -33,18 +33,9 @@ class ConfigGenerator:
             # 使用传入的目录
             self._config_path = os.path.join(process_dir, 'config.txt')
         else:
-            # 直接使用example目录下的process_images.py
-            root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            example_dir = os.path.join(root_dir, 'example')
-            process_images_path = os.path.join(example_dir, 'process_images.py')
-            
-            if os.path.exists(process_images_path):
-                # 如果找到process_images.py，在其旁边生成config.txt
-                self._config_path = os.path.join(os.path.dirname(process_images_path), 'config.txt')
-            else:
-                # 如果找不到，默认使用example目录
-                self._config_path = os.path.join(example_dir, 'config.txt')
-                print(self._lang_data.get("warning_no_process_images_gen").format(self._config_path))
+            # 直接使用当前工作目录
+            current_dir = os.getcwd()
+            self._config_path = os.path.join(current_dir, 'config.txt')
     
     def _find_process_images(self, start_dir):
         """递归查找process_images.py文件"""
@@ -111,18 +102,8 @@ class ConfigGenerator:
 
         # 如果未指定路径，使用默认路径
         if config_path is None:
-            # 尝试从模块名称推断路径
-            module_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                'ocr_modules', module_name
-            )
-            if os.path.exists(module_dir):
-                config_path = os.path.join(module_dir, 'config.txt')
-            else:
-                config_path = os.path.join(
-                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                    'example', f'{module_name}_config.txt'
-                )
+                # 使用当前工作目录
+                config_path = os.path.join(os.getcwd(), f'{module_name}_config.txt')
 
         try:
             # 确保目录存在

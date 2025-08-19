@@ -11,13 +11,9 @@ from .config_generator import ConfigGenerator
 
 class ConfigManager:
     """配置管理器类，作为配置系统的门面，协调配置加载和生成"""
-    _instance = None
 
-    def __new__(cls, process_dir=None):
-        if cls._instance is None:
-            cls._instance = super(ConfigManager, cls).__new__(cls)
-            cls._instance._initialize(process_dir)
-        return cls._instance
+    def __init__(self, process_dir=None):
+        self._initialize(process_dir)
 
     def _initialize(self, process_dir=None):
         """初始化配置管理器"""

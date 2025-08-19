@@ -63,7 +63,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 预加载OCR模块配置并注册依赖
 from lib.ocr_module_loader import OCRModuleLoader
-loader = OCRModuleLoader(parent_dir)
+loader = OCRModuleLoader(parent_dir, current_dir)
 config = loader.load_config()
 # 在依赖检查前注册OCR模块依赖
 loader.pre_register_module_dependencies()

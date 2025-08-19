@@ -33,18 +33,9 @@ class ConfigLoader:
             # 使用传入的目录
             self._config_path = os.path.join(process_dir, 'config.txt')
         else:
-            # 直接使用example目录下的process_images.py
-            root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            example_dir = os.path.join(root_dir, 'example')
-            process_images_path = os.path.join(example_dir, 'process_images.py')
-            
-            if os.path.exists(process_images_path):
-                # 如果找到process_images.py，在其旁边生成config.txt
-                self._config_path = os.path.join(os.path.dirname(process_images_path), 'config.txt')
-            else:
-                # 如果找不到，默认使用example目录
-                self._config_path = os.path.join(example_dir, 'config.txt')
-                print(self._lang_data.get("warning_no_process_images_load").format(self._config_path))
+            # 直接使用当前工作目录
+            current_dir = os.getcwd()
+            self._config_path = os.path.join(current_dir, 'config.txt')
 
         # 使用配置定义中的默认值
         self._default_config = {}
