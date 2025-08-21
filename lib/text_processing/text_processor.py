@@ -1,6 +1,6 @@
 import os
 import time
-from lib.bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 
 class TextProcessor:
     """文本处理器，负责处理OCR识别后的文本"""

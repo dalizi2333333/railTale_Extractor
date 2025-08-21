@@ -11,18 +11,21 @@ APP_CONFIG_DEFINITIONS = {
     },
     'START_MARKERS': {
         'type': 'string',
+        'subtype': 'non_empty',
         'default': '剧情梗概',
         'description': '开始标记: 当检测到这些文字块时开始记录每张图片内识别到的文本，多个标记用逗号分隔',
         'required': True
     },
     'STOP_MARKERS': {
         'type': 'string',
+        'subtype': 'non_empty',
         'default': 'i,存在分支剧情选项,取消,×,⑧取消',
         'description': '结束标记: 当检测到这些文字块时停止记录每张图片内识别到的文本，多个标记用逗号分隔',
         'required': True
     },
     'OCR_MODULE': {
         'type': 'string',
+        'subtype': 'option',
         'options': ['baidu'],
         'default': 'baidu',
         'description': 'OCR模块选择',

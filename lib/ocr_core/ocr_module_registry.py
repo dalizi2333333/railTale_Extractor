@@ -1,7 +1,7 @@
 import importlib
 import os
 import sys
-from lib.bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 from lib.ocr_core.ocr_module_interface import OCRModuleInterface
 
 class OCRModuleRegistry:

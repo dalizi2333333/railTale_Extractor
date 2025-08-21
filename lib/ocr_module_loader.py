@@ -2,7 +2,7 @@ import sys
 from lib.config.config_manager import ConfigManager
 from lib.font_enhancement import detect_font_enhancement
 from lib.ocr_core.ocr_module import create_ocr_module, DEFAULT_MODULE_NAME
-from lib.bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 
 # 获取本地化管理器实例
 loc_manager = LocalizationManager.get_instance()
@@ -24,12 +24,10 @@ class OCRModuleLoader:
     def pre_register_module_dependencies(self):
         """预注册OCR模块依赖，在依赖检查前调用"""
         from lib.dependency_check import dependency_checker
+        from lib.config.config_manager import config_manager
         
-        # 加载配置以确定使用哪个OCR模块
-        if self.config is None:
-            self.config = self.load_config()
-            
-        self.module_name = self.config.get('ocr_module', DEFAULT_MODULE_NAME)
+        # 使用config_manager获取OCR模块名称
+        self.module_name = config_manager.get_config('ocr_module', DEFAULT_MODULE_NAME)
         
         # 动态导入模块依赖注册函数
         try:
@@ -45,7 +43,8 @@ class OCRModuleLoader:
             if register_func:
                 register_func(dependency_checker)
         except ImportError:
-            # 模块不存在，ocr_core会处理自动下载
+            # 模块不存在，使用config_manager获取模块目录，ocr_core会处理自动下载
+            module_dir, _ = config_manager.get_ocr_module_dir(self.module_name)
             pass
             
         return True
@@ -61,7 +60,7 @@ class OCRModuleLoader:
 
     def load_config(self):
         """加载配置"""
-        config_manager = ConfigManager(process_dir=self.process_dir)
+        from lib.config.config_manager import config_manager
         return config_manager.get_config()
 
     def initialize_ocr_module(self, config=None):

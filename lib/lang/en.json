@@ -1,4 +1,7 @@
 {
+    "language_mapping": "ENG",
+    "current_lang":"en.json",
+    "config_not_empty": "Cannot be empty",
     "config_auto_generated_comment": "Automatically generated {0} module configuration file",
     "config_module_file_generated": "Generated {0} module configuration file: {1}",
     "config_last_generated_time": "Last generated time",
@@ -47,6 +50,11 @@
     "multiple_fonts_warning": "\nWarning: Multiple font files exist in the parent directory, font enhancement recognition is not enabled.\n      Please ensure that only one font file exists in the parent directory: zh-cn.ttf, zh-tw.ttf or ja-jp.ttf\n      Currently detected font files: {}",
     "config_not_found": "Configuration file config.txt not found, trying to fetch from GitHub...",
     "config_downloading": "Downloading configuration file from: {}",
+    "module_config_definition_not_found": "Failed to get configuration definition for module '{0}'",
+    "module_name_not_valid": "Module name must be a non-empty string",
+    "cannot_create_ocr_modules_dir": "Failed to create ocr_modules directory: {0}",
+    "cannot_create_module_dir": "Failed to create directory for module '{0}': {1}",
+    "language_system_loaded": "Language system loaded successfully",
     "config_load_success": "Successfully loaded configuration file: {}",
     "config_generate_success": "Successfully generated configuration file: {}",
     "config_generate_fail": "Failed to generate configuration file: {}",
@@ -77,6 +85,9 @@
     "critical_file_download_fail": "Critical file {} download failed",
     "exit_due_to_download_fail": "Due to critical file download failure, the program will exit.",
     "ocr_mapping_load_fail": "Failed to load OCR language mapping file: {}",
+    "module_bootstrap_missing": "Module {} bootstrap.py file is missing or failed to download",
+    "module_method_missing": "Module {} is missing required method: {}",
+    "module_bootstrap_error": "Error bootstrapping module {}: {}",
     "process_flow_fail": "Process flow execution failed",
     "process_complete": "Process complete!",
     "init_fail": "Initialization failed: {}",
@@ -112,5 +123,6 @@
     "general": "General",
     "image_stitch_error": "Image stitching error: {}",
     "image_size_exceeded": "Image size exceeds OCR module support range: {}\nCurrent size: {}x{} pixels\nMaximum supported size: {}x{} pixels",
-    "image_size_check_error": "Error checking image size: {}\nError message: {}"
+    "image_size_check_error": "Error checking image size: {}\nError message: {}",
+    "config_cannot_use_default": "Config item {} cannot use default value, please set a valid value in the configuration file"
 }

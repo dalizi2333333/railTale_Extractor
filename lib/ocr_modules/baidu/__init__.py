@@ -1,6 +1,7 @@
 import os
 import sys
-from lib.bootstrap import LocalizationManager, GITHUB_BASE_URL
+from lib.lang_manager import LocalizationManager
+from lib.bootstrap import GITHUB_BASE_URL
 from lib.ocr_core.ocr_module import create_ocr_module
 from .baidu_ocr_module import BaiduOCRModule, BaiduOCRConfig
 from lib.dependency_check import dependency_checker

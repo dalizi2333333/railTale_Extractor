@@ -3,7 +3,7 @@ import sys
 import time
 import json
 from PIL import Image
-from lib.bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 
 from lib.ocr_module_loader import OCRModuleLoader
 from lib.text_processing.text_processor import TextProcessor

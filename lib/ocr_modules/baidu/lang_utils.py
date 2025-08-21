@@ -10,7 +10,7 @@ class BaiduOCRLangUtils:
         try:
             if lang_file_path is None:
                 # 使用LocalizationManager获取当前语言文件
-                from lib.bootstrap import LocalizationManager
+                from lib.lang_manager import LocalizationManager
                 loc_manager = LocalizationManager.get_instance()
                 current_lang_file = loc_manager.get_current_language_file()
                 # 默认语言文件路径

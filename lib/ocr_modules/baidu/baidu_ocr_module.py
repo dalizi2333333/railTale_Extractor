@@ -1,7 +1,6 @@
 import os
 import json
 from lib.ocr_core.ocr_module_interface import OCRModuleInterface
-from lib.ocr_core.ocr_module_registry import register_ocr_module
 from .debug_utils import BaiduOCRDebugUtils
 from .lang_utils import BaiduOCRLangUtils
 
@@ -38,7 +37,6 @@ class BaiduOCRConfig:
         ])
 
 
-@register_ocr_module('baidu')
 class BaiduOCRModule(OCRModuleInterface):
     """百度OCR模块实现"""
 
@@ -125,7 +123,7 @@ class BaiduOCRModule(OCRModuleInterface):
                 image_data = f.read()
 
             # 默认选项
-            from lib.bootstrap import LocalizationManager
+            from lib.lang_manager import LocalizationManager
             loc_manager = LocalizationManager.get_instance()
             default_options = {
                 'language_type': loc_manager.get_ocr_language(),

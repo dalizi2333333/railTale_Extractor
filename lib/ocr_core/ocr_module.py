@@ -9,7 +9,7 @@ class OCRModule:
     """OCR模块的主类，负责加载和管理不同的OCR实现"""
 
     def __init__(self, module_name=DEFAULT_MODULE_NAME):
-        from bootstrap import LocalizationManager
+        from lib.lang_manager import LocalizationManager
         self.loc_manager = LocalizationManager.get_instance()
         self.module_name = module_name
         self.module_impl = self._load_module_impl()

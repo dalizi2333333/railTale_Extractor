@@ -1,5 +1,5 @@
 import os
-from bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 
 class FontEnhancementDetector:
     """字体增强检测器，负责检测字体文件并提供相应的OCR语言设置"""

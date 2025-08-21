@@ -1,5 +1,5 @@
 import sys
-from bootstrap import LocalizationManager
+from lib.lang_manager import LocalizationManager
 
 class DependencyChecker:
     """依赖检查器，用于管理和检查项目依赖"""

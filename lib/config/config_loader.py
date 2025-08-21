@@ -6,162 +6,82 @@ library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if library_dir not in sys.path:
     sys.path.append(library_dir)
 
-try:
-    from bootstrap import LocalizationManager
-    # 创建LocalizationManager实例
-    loc_manager = LocalizationManager()
-    lang_data = loc_manager.get_lang_data()
-    print(lang_data.get("import_bootstrap_success"))
-except ImportError as e:
-    # 尝试使用默认错误消息
-    print(f"导入bootstrap模块失败: {str(e)}")
-    print(f"当前目录: {os.getcwd()}")
-    print(f"Python路径: {sys.path}")
-    print("程序将退出...")
-    sys.exit(1)
+# 导入必要的模块
+from lib.lang_manager import LocalizationManager
+from .config_manager import ConfigManager
+from lib.ocr_module_bootstraper import module_bootstraper
 
-from .base_config import CONFIG_DEFINITIONS, MODULE_CONFIG_REGISTRY
+# 配置管理器通过静态方法使用，无需创建实例
+
+# 获取LocalizationManager单例实例
+loc_manager = LocalizationManager.get_instance()
+lang_data = loc_manager.get_lang_data()
+print(lang_data.get("language_system_loaded", "配置加载器初始化成功"))
+
+from .base_config import CONFIG_DEFINITIONS
 from .config_generator import ConfigGenerator
 
 class ConfigLoader:
-    """配置加载器类，负责加载应用程序配置文件"""
-    def __init__(self, loc_manager=None, process_dir=None):
+    """配置加载器类，负责加载应用程序配置文件到全局config_manager"""
+    def __init__(self, loc_manager=None):
         self._loc_manager = loc_manager or LocalizationManager.get_instance()
         self._lang_data = self._loc_manager.get_lang_data()
         
-        if process_dir:
-            # 使用传入的目录
-            self._config_path = os.path.join(process_dir, 'config.txt')
-        else:
-            # 直接使用当前工作目录
-            current_dir = os.getcwd()
-            self._config_path = os.path.join(current_dir, 'config.txt')
-
-        # 使用配置定义中的默认值
-        self._default_config = {}
-        for key, prop in CONFIG_DEFINITIONS.items():
-            self._default_config[key.lower()] = prop['default']
-        # 模块配置缓存
-        self._module_configs = {}
-        self._config = None
         self._config_generator = ConfigGenerator(self._loc_manager)
     
-    def _find_process_images(self, start_dir):
-        """递归查找process_images.py文件"""
-        for root, dirs, files in os.walk(start_dir):
-            if 'process_images.py' in files:
-                return os.path.join(root, 'process_images.py')
-        return None
+    def load_config(self, module=None):
+        """加载配置文件到全局config_manager
 
-    def load_config(self):
-        """加载配置文件
+        Args:
+            module (str, optional): 模块名称，如果为None则加载主配置
 
         Returns:
             dict: 加载的配置字典
 
         Raises:
-            Exception: 配置读取或生成失败时抛出异常
+            Exception: 配置读取失败时抛出异常
         """
-        if self._config is not None:
-            return self._config
+        # 确保配置管理器已初始化
+        ConfigManager.initialize()
 
-        # 检查配置文件是否存在
-        if not os.path.exists(self._config_path):
-            print(self._lang_data['config_not_found'])
-            self._config_generator.generate_config()
+        # 确定是加载主配置还是模块配置
+        if module is None:
+            # 主配置
+            config_definitions = CONFIG_DEFINITIONS
+            process_dir = ConfigManager.get_process_dir()
+            config_path = os.path.join(process_dir, 'config.txt')
+        else:
+            # 模块配置
+            # 使用模块引导器获取配置定义
+            config_definitions = module_bootstraper.get_required_config_items(module)
+            if not config_definitions:
+                print(self._lang_data.get("module_config_not_found").format(module))
+                return {}
 
-        # 读取配置文件
+            # 获取模块目录并构建配置文件路径
+            module_dir, is_newly_created = config_manager.get_ocr_module_dir(module)
+            config_path = os.path.join(module_dir, f'{module}_config.txt')
+
+            # 如果配置文件不存在，生成配置文件
+            if not os.path.exists(config_path):
+                self._config_generator.generate_config(module)
+
+            # 再次检查配置文件是否存在
+            if not os.path.exists(config_path):
+                print(self._lang_data.get("config_file_not_found").format(config_path))
+                return {}
+
+        # 初始化配置状态变量
+        config_valid = 2  # 0: 不可用, 1: 部分可用(使用了默认值), 2: 完全可用
+        config = {}
+
         try:
-            self._config = {**self._default_config}  # 从默认配置开始
-            with open(self._config_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    # 跳过注释和空行
-                    if line.strip().startswith('#') or not line.strip():
-                        continue
-                    # 解析配置项
-                    if '=' in line:
-                        key, value = line.split('=', 1)
-                        key = key.strip().lower()  # 转换为小写以支持大小写不敏感
-                        value = value.strip().strip("'").strip('"')
-
-                        # 验证配置项
-                        if key.upper() in CONFIG_DEFINITIONS:
-                            prop = CONFIG_DEFINITIONS[key.upper()]
-                            # 类型验证
-                            if prop['type'] == 'integer' and not value.isdigit():
-                                print(self._lang_data['config_validation_error'].format(
-                                    key.upper(), f"必须是整数，当前值: {value}"
-                                ))
-                                continue
-                            # 选项验证
-                            if 'options' in prop and value not in prop['options']:
-                                print(self._lang_data['config_validation_error'].format(
-                                    key.upper(), f"必须是以下选项之一: {', '.join(prop['options'])}, 当前值: {value}"
-                                ))
-                                continue
-                            # 范围验证
-                            if prop['type'] == 'integer':
-                                value_int = int(value)
-                                if 'min_value' in prop and value_int < prop['min_value']:
-                                    print(self._lang_data['config_validation_error'].format(
-                                        key.upper(), f"必须大于或等于 {prop['min_value']}, 当前值: {value}"
-                                    ))
-                                    continue
-                                if 'max_value' in prop and value_int > prop['max_value']:
-                                    print(self._lang_data['config_validation_error'].format(
-                                        key.upper(), f"必须小于或等于 {prop['max_value']}, 当前值: {value}"
-                                    ))
-                                    continue
-
-                        self._config[key] = value
-
-            # 检查必需的配置项
-            for key, prop in CONFIG_DEFINITIONS.items():
-                if prop.get('required', False) and key.lower() not in self._config:
-                    print(self._lang_data['missing_required_config'].format(key))
-                    self._config[key.lower()] = prop['default']
-                    print(self._lang_data['using_default_value'].format(key, prop['default']))
-
-            print(self._lang_data['config_load_success'].format(self._config_path))
-            return self._config
-        except Exception as e:
-            error_msg = self._lang_data['config_read_error'].format(str(e))
-            print(error_msg)
-            raise Exception(error_msg)
-
-    def load_module_config(self, module_name):
-        """加载模块配置
-
-        Args:
-            module_name (str): 模块名称
-
-        Returns:
-            dict: 模块配置字典
-        """
-        if module_name in self._module_configs:
-            return self._module_configs[module_name]
-
-        if module_name not in MODULE_CONFIG_REGISTRY:
-            print(self._lang_data.get("module_not_registered").format(module_name))
-            self._module_configs[module_name] = {}
-            return {}
-
-        module_info = MODULE_CONFIG_REGISTRY[module_name]
-        config_definitions = module_info['definitions']
-        config_path = module_info['path']
-
-        # 如果未指定路径或路径不存在，生成配置文件
-        if config_path is None or not os.path.exists(config_path):
-            self._config_generator.generate_module_config(module_name)
-            config_path = MODULE_CONFIG_REGISTRY[module_name]['path']
-
-        # 读取配置文件
-        module_config = {}
-        try:
-            # 使用默认值初始化
+            # 初始化配置字典，设置默认值
             for key, prop in config_definitions.items():
-                module_config[key.lower()] = prop['default']
+                config[key] = prop['default']
+                ConfigManager.set(key, prop['default'])
 
+            # 读取配置文件
             with open(config_path, 'r', encoding='utf-8') as f:
                 for line in f:
                     # 跳过注释和空行
@@ -170,70 +90,96 @@ class ConfigLoader:
                     # 解析配置项
                     if '=' in line:
                         key, value = line.split('=', 1)
-                        key = key.strip().lower()  # 转换为小写以支持大小写不敏感
+                        key = key.strip().upper()  # 转换为大写键
                         value = value.strip().strip("'").strip('"')
 
                         # 验证配置项
-                        if key.upper() in config_definitions:
-                            prop = config_definitions[key.upper()]
-                            # 类型验证
-                            if prop['type'] == 'integer' and not value.isdigit():
-                                print(self._lang_data.get("config_validation_error_int").format(key.upper(), value))
+                        if key in config_definitions:
+                            prop = config_definitions[key]
+                            is_valid = True
+                            error_msg = ""
+
+                            # 处理不可取默认值类型
+                            if prop.get('cannot_use_default', False) and value == prop['default']:
+                                config_valid = 0
+                                print(self._lang_data['config_cannot_use_default'].format(key))
                                 continue
-                            # 选项验证
-                            if 'options' in prop and value not in prop['options']:
-                                print(self._lang_data.get("config_validation_error_options").format(key.upper(), ', '.join(prop['options']), value))
-                                continue
-                            # 范围验证
+
+                            # 类型和范围验证
                             if prop['type'] == 'integer':
-                                value_int = int(value)
-                                if 'min_value' in prop and value_int < prop['min_value']:
-                                    print(self._lang_data.get("config_validation_error_min").format(key.upper(), prop['min_value'], value))
-                                    continue
-                                if 'max_value' in prop and value_int > prop['max_value']:
-                                    print(self._lang_data.get("config_validation_error_max").format(key.upper(), prop['max_value'], value))
-                                    continue
+                                if not value.isdigit():
+                                    is_valid = False
+                                    error_msg = f"必须是整数，当前值: {value}"
+                                else:
+                                    value_int = int(value)
+                                    if 'min_value' in prop and value_int < prop['min_value']:
+                                        is_valid = False
+                                        error_msg = f"必须大于或等于 {prop['min_value']}, 当前值: {value}"
+                                    elif 'max_value' in prop and value_int > prop['max_value']:
+                                        is_valid = False
+                                        error_msg = f"必须小于或等于 {prop['max_value']}, 当前值: {value}"
+                            elif prop['type'] == 'float':
+                                try:
+                                    value_float = float(value)
+                                    if 'min_value' in prop and value_float < prop['min_value']:
+                                        is_valid = False
+                                        error_msg = f"必须大于或等于 {prop['min_value']}, 当前值: {value}"
+                                    elif 'max_value' in prop and value_float > prop['max_value']:
+                                        is_valid = False
+                                        error_msg = f"必须小于或等于 {prop['max_value']}, 当前值: {value}"
+                                except ValueError:
+                                    is_valid = False
+                                    error_msg = f"必须是浮点数，当前值: {value}"
+                            elif prop['type'] == 'boolean':
+                                if value.lower() not in ['true', 'false']:
+                                    is_valid = False
+                                    error_msg = f"必须是布尔值(true/false)，当前值: {value}"
+                            elif 'options' in prop and value not in prop['options']:
+                                is_valid = False
+                                error_msg = f"必须是以下选项之一: {', '.join(prop['options'])}, 当前值: {value}"
+                            elif prop['type'] == 'string' and prop.get('non_empty', False) and not value:
+                                is_valid = False
+                                error_msg = "不能为空值"
 
-                        module_config[key] = value
-
-            # 检查必需的配置项
-            for key, prop in config_definitions.items():
-                if prop.get('required', False) and key.lower() not in module_config:
-                    print(self._lang_data.get("missing_required_config_item").format(key))
-                    module_config[key.lower()] = prop['default']
-                    print(self._lang_data.get("using_default_value_item").format(key, prop['default']))
-
-            print(self._lang_data.get("module_config_loaded").format(module_name, config_path))
-            self._module_configs[module_name] = module_config
-            return module_config
+                            # 处理验证结果
+                            if is_valid:
+                                # 处理多值情况
+                                if prop.get('allow_multiple', False) and ',' in value:
+                                    config[key] = [v.strip() for v in value.split(',')]
+                                    ConfigManager.set(key, config[key])
+                                else:
+                                    config[key] = value
+                                    ConfigManager.set(key, value)
+                            else:
+                                # 使用默认值
+                                config_valid = 1
+                                print(self._lang_data['config_validation_error'].format(key, error_msg))
+                                print(self._lang_data['using_default_value'].format(key, prop['default']))
+                        else:
+                            print(self._lang_data['unknown_config_key'].format(key))
         except Exception as e:
-            error_msg = self._lang_data.get("module_config_read_fail").format(module_name, str(e))
+            error_msg = self._lang_data['config_read_error'].format(str(e))
             print(error_msg)
-            self._module_configs[module_name] = {}
-            return {}
+            raise Exception(error_msg)
 
-    def get_config(self):
-        """获取配置
+        # 检查必需的配置项
+        for key, prop in config_definitions.items():
+            if prop.get('required', False) and key not in config:
+                print(self._lang_data['missing_required_config'].format(key))
+                config[key] = prop['default']
+                ConfigManager.set(key, prop['default'])
+                print(self._lang_data['using_default_value'].format(key, prop['default']))
+                config_valid = 1
 
-        Returns:
-            dict: 配置字典
+        # 检查配置是否完全不可用
+        if config_valid == 0:
+            error_msg = self._lang_data['config_cannot_use_default'].format('CONFIG_VALID')
+            print(error_msg)
+            raise Exception(error_msg)
 
-        Raises:
-            Exception: 配置读取或生成失败时抛出异常
-        """
-        if self._config is None:
-            self.load_config()
-        return self._config
+        # 存储配置有效状态
+        ConfigManager.set('CONFIG_VALID', config_valid)
+        config['CONFIG_VALID'] = config_valid
 
-    def get_module_config(self, module_name):
-        """获取模块配置
-
-        Args:
-            module_name (str): 模块名称
-
-        Returns:
-            dict: 模块配置字典
-        """
-        if module_name not in self._module_configs:
-            self.load_module_config(module_name)
-        return self._module_configs.get(module_name, {})
+        print(self._lang_data['config_load_success'].format(config_path))
+        return config
