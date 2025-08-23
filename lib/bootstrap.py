@@ -352,8 +352,8 @@ def bootstrap(paths=None):
     _check_and_download_files(paths, lang_data)
 
     # 4. 初始化语言管理器
-    from lib.lang_manager import LocalizationManager
-    lang_manager = LocalizationManager.initialize(lang_data)
+    from lib.lang_manager import LangManager
+    lang_manager = LangManager.initialize(lang_data)
 
     # 5. 初始化配置管理器
     from lib.config.config_manager import ConfigManager
@@ -370,18 +370,12 @@ def bootstrap(paths=None):
     if exists_config:
         ConfigLoader().load_config()
 
-    # 加载配置文件（如果存在）
-#    config_loader = ConfigLoader()
-#    config = config_loader.load_config()
-#    # 将配置设置到配置管理器
-#    if config:
-#        for key, value in config.items():
-#            config_manager.set(key, value)
-
     # 6. 初始化OCR模块
-    # from lib.ocr_module_bootstraper import ModuleBootstraper
-    # module_bootstraper = ModuleBootstraper()
-    # module_bootstraper.bootstrap_module()
+    from lib.ocr_module_bootstraper import ModuleBootstraper
+    module_bootstraper = ModuleBootstraper()
+    if not module_bootstraper.bootstrap_module():
+        print(LangManager.get_lang_data()['module_bootstrap_fail'].format('baidu'))
+        sys.exit(1)
 
     # 7. 处理项目
     # from lib.project_processor import ProjectProcessor

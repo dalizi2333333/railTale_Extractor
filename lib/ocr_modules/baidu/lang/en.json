@@ -36,5 +36,8 @@
     "block_details": "Block details:",
     "block_content": "  Block {}: content=\"{}\"",
     "block_confidence": ", confidence={}",
-    "processing": "Processing: Retain"
+    "processing": "Processing: Retain",
+    "module_mandatory_config": "Module {} mandatory configuration is missing, please check the configuration file",
+    "module_bootstrap_fail": "Module {} bootstrap failed",
+    "config_cannot_use_default": "Configuration file {} cannot use default values, please check the configuration file"
 }

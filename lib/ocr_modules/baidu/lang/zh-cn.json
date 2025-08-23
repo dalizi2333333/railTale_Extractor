@@ -36,5 +36,10 @@
     "block_details": "字块详情:",
     "block_content": "  字块 {}: 内容=\"{}\"",
     "block_confidence": ", 置信度={}",
-    "processing": "处理: 保留"
+    "processing": "处理: 保留",
+    "module_mandatory_config": "模块 {} 强制配置缺失，请检查配置文件",
+    "module_bootstrap_fail": "模块 {} 引导失败",
+    "config_cannot_use_default": "配置文件 {} 不能使用默认值，请检查配置文件"
+
+
 }

@@ -1,0 +1,258 @@
+import os
+import json
+from lib.lang_manager import LangManager
+from lib.config.config_manager import ConfigManager
+
+# 百度OCR模块的bootstrap
+# 此文件由ModuleBootstraper加载和使用，负责模块的依赖管理、配置和初始化
+
+
+def get_required_dependencies():
+    """
+    返回模块需要的额外依赖
+    这些依赖不会被自动安装，需要用户手动安装或通过依赖管理工具安装
+    
+    Returns:
+        dict: 包含依赖信息的字典，格式为 {import_name: {'install_name': install_name, 'version': version}}
+    """
+    return {
+        'aip': {
+            'install_name': 'baidu-aip',
+            'version': '>=4.0.0'
+        }
+    }
+
+
+def get_required_config_items():
+    """
+    返回模块需要的配置项
+    这些配置项将被添加到配置文件中
+    
+    Returns:
+        dict: 包含配置项名称、类型、默认值和描述的字典
+    """
+    # 获取语言数据
+    lang_manager = LangManager.get_instance()
+    lang_data = lang_manager.get_module_lang_data()
+    
+    return {
+        'baidu_app_id': {
+            'type': 'str',
+            'default': 'your_app_id',
+            'description': lang_data.get('baidu_app_id_desc', '百度OCR应用的APP ID'),
+            'cannot_use_default': True
+        },
+        'baidu_api_key': {
+            'type': 'str',
+            'default': 'your_api_key',
+            'description': lang_data.get('baidu_api_key_desc', '百度OCR应用的API Key'),
+            'cannot_use_default': True
+        },
+        'baidu_secret_key': {
+            'type': 'str',
+            'default': 'your_secret_key',
+            'description': lang_data.get('baidu_secret_key_desc', '百度OCR应用的Secret Key'),
+            'cannot_use_default': True
+        },
+        'test_mode': {
+            'type': 'bool',
+            'default': False,
+            'description': lang_data.get('test_mode_desc', '是否启用测试模式，测试模式下不会真正调用百度API')
+        },
+        'simulated_ocr_text': {
+            'type': 'str',
+            'default': '这是模拟的OCR识别结果文本',
+            'description': lang_data.get('simulated_ocr_text_desc', '测试模式下返回的模拟OCR文本')
+        }
+    }
+
+
+def has_mandatory_config():
+    """
+    返回模块是否有不可为默认值的配置项
+    如果返回True，当根据complete_module方法补全模块后，程序会退出并提醒用户修改配置
+    
+    Returns:
+        bool: 是否有不可为默认值的配置项
+    """
+    return True
+
+
+def _download_file_from_github(github_path, local_path, download_url, lang_data):
+    """从GitHub下载文件
+
+    Args:
+        github_path (str): GitHub路径
+        local_path (str): 本地文件路径
+        download_url (str): 下载基础URL
+        lang_data (dict): 语言数据字典
+
+    Returns:
+        bool: 是否下载成功
+    """
+    max_retries = 3
+    timeout = 10
+    url = f'{download_url}/{github_path}'
+
+    for attempt in range(max_retries):
+        try:
+            import requests
+            response = requests.get(url, timeout=timeout)
+            response.raise_for_status()
+
+            # 确保目录存在
+            os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+            # 保存文件
+            with open(local_path, 'wb') as f:
+                f.write(response.content)
+
+            print(lang_data['download_success'].format(local_path))
+            return True
+        except requests.exceptions.RequestException as e:
+            error_msg = str(e)
+            if attempt < max_retries - 1:
+                print(lang_data['download_fail'].format(url, error_msg))
+                print(lang_data['retry_attempt'].format(attempt+1))
+            else:
+                print(lang_data['download_fail'].format(url, error_msg))
+                print(lang_data['max_retries_reached'].format(max_retries))
+    return False
+
+
+def _check_module_files(module_dir, download_url, lang_data):
+    """检查模块文件结构并下载缺失文件
+
+    Args:
+        module_dir (str): 模块目录路径
+        download_url (str): 下载基础URL
+        lang_data (dict): 语言数据字典
+
+    Returns:
+        bool: 关键文件是否全部成功下载
+    """
+    critical_files_downloaded = True
+
+    # 定义模块目录结构
+    MODULE_STRUCTURE = {
+        'files': ['__init__.py', 'baidu_ocr_module.py', 'module_bootstrap.py', 'debug_utils.py', 'lang_utils.py'],
+        'subdirectories': {
+            'lang': {
+                'files': ['zh-cn.json', 'en.json']
+            }
+        }
+    }
+
+    # 递归检查目录结构
+    def _check_dir_structure(base_path, dir_config, github_prefix):
+        nonlocal critical_files_downloaded
+
+        # 检查当前目录是否存在
+        if not os.path.exists(base_path):
+            print(lang_data['dir_not_found'].format(base_path))
+            os.makedirs(base_path, exist_ok=True)
+            print(lang_data['dir_created'].format(base_path))
+
+        # 检查当前目录中的文件
+        if 'files' in dir_config:
+            print(lang_data['dir_checking'].format(base_path))
+            for file_name in dir_config['files']:
+                file_path = os.path.join(base_path, file_name)
+                # 检查文件是否存在
+                if os.path.exists(file_path):
+                    print(lang_data['file_found'].format(file_path))
+                else:
+                    print(lang_data['file_not_found'].format(file_path))
+                    # 构建GitHub路径
+                    github_path = f'{github_prefix}/{file_name}' if github_prefix else file_name
+                    # 从GitHub下载文件
+                    if not _download_file_from_github(github_path, file_path, download_url, lang_data):
+                        critical_files_downloaded = False
+                        print(lang_data['critical_file_download_fail'].format(github_path))
+
+        # 递归检查子目录
+        if 'subdirectories' in dir_config:
+            for subdir_name, subdir_config in dir_config['subdirectories'].items():
+                subdir_path = os.path.join(base_path, subdir_name)
+                # 构建子目录的GitHub前缀
+                new_github_prefix = f'{github_prefix}/{subdir_name}' if github_prefix else subdir_name
+                _check_dir_structure(subdir_path, subdir_config, new_github_prefix)
+
+    # 开始检查模块目录结构
+    _check_dir_structure(module_dir, MODULE_STRUCTURE, '')
+    return critical_files_downloaded
+
+
+def complete_module():
+    """
+    补全模块的方式
+    负责初始化模块所需的语言文件和其他资源
+    
+    Returns:
+        bool: 是否补全成功
+    """
+    try:
+        # 获取模块目录
+        module_dir, _ = ConfigManager.get_ocr_module_dir('baidu')
+
+        # 下载基础URL
+        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/lib/ocr_modules/baidu'
+
+        # 确保lang目录存在
+        lang_dir = os.path.join(module_dir, 'lang')
+        if not os.path.exists(lang_dir):
+            os.makedirs(lang_dir, exist_ok=True)
+            print(f'创建语言目录: {lang_dir}')
+
+        # 初始使用默认语言数据
+        default_lang_data = {
+            'dir_not_found': '目录未找到: {{}}',
+            'dir_created': '已创建目录: {{}}',
+            'dir_checking': '正在检查目录: {{}}',
+            'file_found': '找到文件: {{}}',
+            'file_not_found': '未找到文件: {{}}',
+            'download_success': '下载成功: {{}}',
+            'download_fail': '下载失败 ({{}}): {{}}',
+            'retry_attempt': '重试尝试 {{}}...',
+            'max_retries_reached': '已达到最大重试次数 ({{}})',
+            'critical_file_download_fail': '关键文件下载失败: {{}}',
+            'check_complete': '检查完成',
+            'exit_due_to_download_fail': '由于文件下载失败，程序退出'
+        }
+
+        # 检查语言文件是否存在，如果不存在则从GitHub下载
+        languages = ['zh-cn', 'en']
+        for lang in languages:
+            lang_file = os.path.join(lang_dir, f'{lang}.json')
+            if not os.path.exists(lang_file):
+                print(f'未找到语言文件: {lang_file}')
+                github_path = f'lang/{lang}.json'
+                if not _download_file_from_github(github_path, lang_file, download_url, default_lang_data):
+                    print(f'下载语言文件失败: {lang_file}')
+                    # 使用默认语言数据
+                    print(f'使用默认语言数据')
+            else:
+                print(f'找到语言文件: {lang_file}')
+
+        # 加载语言数据
+        from lib.lang_manager import LangManager
+        lang_manager = LangManager.get_instance()
+        lang_data = lang_manager.get_lang_data()
+
+        # 检查并下载模块文件
+        print('开始检查模块文件完整性...')
+        if not _check_module_files(module_dir, download_url, lang_data):
+            print(lang_data['exit_due_to_download_fail'])
+            return False
+
+        print(lang_data['check_complete'])
+        return True
+    except Exception as e:
+        print(f'补全百度OCR模块失败: {str(e)}')
+        return False
+
+# 模块初始化代码
+if __name__ == '__main__':
+    # 当直接运行此文件时，可以用于测试模块补全功能
+    complete_module()
+    print('百度OCR模块bootstrap完成')

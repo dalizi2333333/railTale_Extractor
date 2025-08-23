@@ -1,5 +1,6 @@
 import os
 import sys
+from lib.lang_manager import LangManager
 
 # 尝试导入bootstrap模块
 library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,8 +54,7 @@ class ConfigManager:
         Returns:
             配置项值或默认值
         """
-        instance = cls.get_instance()
-        return instance._config.get(key, default)
+        return cls()._config.get(key, default)
 
     @classmethod
     def set(cls, key, value):
@@ -64,8 +64,7 @@ class ConfigManager:
             key (str): 配置项键名
             value: 配置项值
         """
-        instance = cls.get_instance()
-        instance._config[key] = value
+        cls()._config[key] = value
 
     @classmethod
     def get_config(cls):
@@ -74,7 +73,7 @@ class ConfigManager:
         Returns:
             dict: 配置字典
         """
-        return cls.get_instance()._config
+        return cls()._config
 
     @classmethod
     def get_process_dir(cls):
@@ -83,7 +82,7 @@ class ConfigManager:
         Returns:
             str: 处理目录路径
         """
-        return cls.get_instance()._paths.get('process_dir')
+        return cls()._paths.get('process_dir')
 
     @classmethod
     def get_parent_dir(cls):
@@ -92,7 +91,7 @@ class ConfigManager:
         Returns:
             str: 父目录路径
         """
-        return cls.get_instance()._paths.get('parent_dir')
+        return cls()._paths.get('parent_dir')
 
     @classmethod
     def get_project_download_url(cls):
@@ -101,7 +100,7 @@ class ConfigManager:
         Returns:
             str: 项目下载URL
         """
-        return cls.get_instance()._paths.get('project_download_url')
+        return cls()._paths.get('project_download_url')
 
     @classmethod
     def get_ocr_module_dir(cls, module_name):
@@ -121,9 +120,7 @@ class ConfigManager:
         
         # 确保模块名称有效
         if not module_name or not isinstance(module_name, str):
-            from lib.lang_manager import LocalizationManager
-            loc_manager = LocalizationManager.get_instance()
-            raise ValueError(loc_manager.get_lang_data()['module_name_not_valid'])
+            raise ValueError(LangManager.get_lang_data()['module_name_not_valid'])
             
         # 检查并创建ocr_modules目录
         lib_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,9 +132,7 @@ class ConfigManager:
                 os.makedirs(ocr_modules_dir)
                 is_newly_created = True
             except Exception as e:
-                from lib.lang_manager import LocalizationManager
-                loc_manager = LocalizationManager.get_instance()
-                raise Exception(loc_manager.get_lang_data()['cannot_create_ocr_modules_dir'].format(str(e)))
+                raise Exception(LangManager.get_lang_data()['cannot_create_ocr_modules_dir'].format(str(e)))
                 
         # 检查并创建模块目录
         module_dir = os.path.join(ocr_modules_dir, module_name)
@@ -146,9 +141,7 @@ class ConfigManager:
                 os.makedirs(module_dir)
                 is_newly_created = True
             except Exception as e:
-                from lib.lang_manager import LocalizationManager
-                loc_manager = LocalizationManager.get_instance()
-                raise Exception(loc_manager.get_lang_data()['cannot_create_module_dir'].format(module_name, str(e)))
+                raise Exception(LangManager.get_lang_data()['cannot_create_module_dir'].format(module_name, str(e)))
                 
         # 存入缓存
         instance._ocr_module_dir_cache[module_name] = (module_dir, is_newly_created)

@@ -6,9 +6,8 @@ library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if library_dir not in sys.path:
     sys.path.append(library_dir)
 
-from .base_config import APP_CONFIG_DEFINITIONS
+from .default_config import DefaultConfig
 from .config_generator import ConfigGenerator
-from lib.ocr_module_bootstraper import module_bootstraper
 
 
 def ensure_config(module=None):
@@ -22,22 +21,21 @@ def ensure_config(module=None):
     """
     # 导入所需模块
     from .config_manager import ConfigManager
+    from lib.lang_manager import LangManager
     
     config_manager = ConfigManager()
     
     # 确定配置定义和文件路径
+    # 使用DefaultConfig获取配置定义（不需要本地化版本）
+    config_definitions = DefaultConfig.get_config_definitions(module)
+    if not config_definitions:
+        raise ValueError(LangManager.get_lang_data()['module_config_definition_not_found'].format(module))
+
     if module is not None:
-        # 使用模块引导器获取配置定义
-        config_definitions = module_bootstraper.get_required_config_items(module)
-        if not config_definitions:
-            from lib.lang_manager import LocalizationManager
-            loc_manager = LocalizationManager.get_instance()
-            raise ValueError(loc_manager.get_lang_data()['module_config_definition_not_found'].format(module))
         # 使用get_ocr_module_dir获取模块路径
         module_dir , is_newly_created = config_manager.get_ocr_module_dir(module)
-        config_path = os.path.join(module_dir, f'{module}_config.txt')
+        config_path = os.path.join(module_dir, 'config.txt')
     else:
-        config_definitions = APP_CONFIG_DEFINITIONS
         # 从ConfigManager获取处理目录
         process_dir = config_manager.get_process_dir()
         config_path = os.path.join(process_dir, 'config.txt')

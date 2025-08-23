@@ -1,7 +1,7 @@
 import os
 import sys
-from lib.config.config_manager import config_manager
-from lib.lang_manager import LocalizationManager
+from lib.config.config_manager import ConfigManager
+from lib.lang_manager import LangManager
 
 class ProjectProcessor:
     """项目处理器类，负责项目的实际业务处理流程"""
@@ -10,15 +10,15 @@ class ProjectProcessor:
         """处理项目
         """
         # 确保配置管理器已初始化
-        if not hasattr(config_manager, '_initialized') or not config_manager._initialized:
+        if not hasattr(ConfigManager, '_initialized') or not ConfigManager._initialized:
             raise Exception('ConfigManager not initialized')
 
         # 从配置管理器获取必要路径
-        parent_dir = config_manager.get_parent_dir()
-        process_dir = config_manager.get_process_dir()
+        parent_dir = ConfigManager.get_parent_dir()
+        process_dir = ConfigManager.get_process_dir()
 
         # 获取项目配置
-        project_config = config_manager.get_config()
+        project_config = ConfigManager.get_config()
 
         # 目录名称（用于结果文件命名）
         dir_name = os.path.basename(process_dir)
@@ -40,7 +40,7 @@ class ProjectProcessor:
         text_processing_loader = TextProcessingLoader(loader_config)
 
         # 运行处理流程
-        loc_manager = LocalizationManager.get_instance()
+        loc_manager = LangManager.get_instance()
         if not text_processing_loader.run():
             print(loc_manager.get_lang_data().get('process_flow_fail', 'Processing failed'))
             sys.exit(1)

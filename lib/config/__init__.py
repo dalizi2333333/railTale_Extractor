@@ -1,6 +1,6 @@
 # 配置包初始化文件
 
-from .base_config import APP_CONFIG_DEFINITIONS, MODULE_CONFIG_REGISTRY, CONFIG_DEFINITIONS
+from .default_config import APP_CONFIG_DEFINITIONS, MODULE_CONFIG_REGISTRY, CONFIG_DEFINITIONS
 from .config_manager import ConfigManager
 from .module_config import register_module_config
 
