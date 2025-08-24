@@ -1,5 +1,7 @@
 import os
 import json
+import sys
+
 from lib.lang_manager import LangManager
 from lib.config.config_manager import ConfigManager
 
@@ -31,38 +33,25 @@ def get_required_config_items():
     Returns:
         dict: 包含配置项名称、类型、默认值和描述的字典
     """
-    # 获取语言数据
-    lang_manager = LangManager.get_instance()
-    lang_data = lang_manager.get_module_lang_data()
     
     return {
         'baidu_app_id': {
             'type': 'str',
             'default': 'your_app_id',
-            'description': lang_data.get('baidu_app_id_desc', '百度OCR应用的APP ID'),
+            'description_key': 'baidu_app_id_desc',
             'cannot_use_default': True
         },
         'baidu_api_key': {
             'type': 'str',
             'default': 'your_api_key',
-            'description': lang_data.get('baidu_api_key_desc', '百度OCR应用的API Key'),
+            'description_key': 'baidu_api_key_desc', 
             'cannot_use_default': True
         },
         'baidu_secret_key': {
             'type': 'str',
             'default': 'your_secret_key',
-            'description': lang_data.get('baidu_secret_key_desc', '百度OCR应用的Secret Key'),
+            'description_key': 'baidu_secret_key_desc',
             'cannot_use_default': True
-        },
-        'test_mode': {
-            'type': 'bool',
-            'default': False,
-            'description': lang_data.get('test_mode_desc', '是否启用测试模式，测试模式下不会真正调用百度API')
-        },
-        'simulated_ocr_text': {
-            'type': 'str',
-            'default': '这是模拟的OCR识别结果文本',
-            'description': lang_data.get('simulated_ocr_text_desc', '测试模式下返回的模拟OCR文本')
         }
     }
 
@@ -78,14 +67,13 @@ def has_mandatory_config():
     return True
 
 
-def _download_file_from_github(github_path, local_path, download_url, lang_data):
+def _download_file_from_github(github_path, local_path, download_url):
     """从GitHub下载文件
 
     Args:
         github_path (str): GitHub路径
         local_path (str): 本地文件路径
         download_url (str): 下载基础URL
-        lang_data (dict): 语言数据字典
 
     Returns:
         bool: 是否下载成功
@@ -107,26 +95,25 @@ def _download_file_from_github(github_path, local_path, download_url, lang_data)
             with open(local_path, 'wb') as f:
                 f.write(response.content)
 
-            print(lang_data['download_success'].format(local_path))
+            print(LangManager.get_module_lang_data()['download_success'].format(local_path))
             return True
         except requests.exceptions.RequestException as e:
             error_msg = str(e)
             if attempt < max_retries - 1:
-                print(lang_data['download_fail'].format(url, error_msg))
-                print(lang_data['retry_attempt'].format(attempt+1))
+                print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
+                print(LangManager.get_module_lang_data()['retry_attempt'].format(attempt+1))
             else:
-                print(lang_data['download_fail'].format(url, error_msg))
-                print(lang_data['max_retries_reached'].format(max_retries))
+                print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
+                print(LangManager.get_module_lang_data()['max_retries_reached'].format(max_retries))
     return False
 
 
-def _check_module_files(module_dir, download_url, lang_data):
+def _check_module_files(module_dir, download_url):
     """检查模块文件结构并下载缺失文件
 
     Args:
         module_dir (str): 模块目录路径
         download_url (str): 下载基础URL
-        lang_data (dict): 语言数据字典
 
     Returns:
         bool: 关键文件是否全部成功下载
@@ -149,26 +136,26 @@ def _check_module_files(module_dir, download_url, lang_data):
 
         # 检查当前目录是否存在
         if not os.path.exists(base_path):
-            print(lang_data['dir_not_found'].format(base_path))
+            print(LangManager.get_module_lang_data()['dir_not_found'].format(base_path))
             os.makedirs(base_path, exist_ok=True)
-            print(lang_data['dir_created'].format(base_path))
+            print(LangManager.get_module_lang_data()['dir_created'].format(base_path))
 
         # 检查当前目录中的文件
         if 'files' in dir_config:
-            print(lang_data['dir_checking'].format(base_path))
+            print(LangManager.get_module_lang_data()['dir_checking'].format(base_path))
             for file_name in dir_config['files']:
                 file_path = os.path.join(base_path, file_name)
                 # 检查文件是否存在
                 if os.path.exists(file_path):
-                    print(lang_data['file_found'].format(file_path))
+                    print(LangManager.get_module_lang_data()['file_found'].format(file_path))
                 else:
-                    print(lang_data['file_not_found'].format(file_path))
+                    print(LangManager.get_module_lang_data()['file_not_found'].format(file_path))
                     # 构建GitHub路径
                     github_path = f'{github_prefix}/{file_name}' if github_prefix else file_name
                     # 从GitHub下载文件
-                    if not _download_file_from_github(github_path, file_path, download_url, lang_data):
+                    if not _download_file_from_github(github_path, file_path, download_url):
                         critical_files_downloaded = False
-                        print(lang_data['critical_file_download_fail'].format(github_path))
+                        print(LangManager.get_module_lang_data()['critical_file_download_fail'].format(github_path))
 
         # 递归检查子目录
         if 'subdirectories' in dir_config:
@@ -229,27 +216,34 @@ def complete_module():
                 github_path = f'lang/{lang}.json'
                 if not _download_file_from_github(github_path, lang_file, download_url, default_lang_data):
                     print(f'下载语言文件失败: {lang_file}')
-                    # 使用默认语言数据
-                    print(f'使用默认语言数据')
+                    sys.exit(1)
             else:
                 print(f'找到语言文件: {lang_file}')
 
         # 加载语言数据
-        from lib.lang_manager import LangManager
-        lang_manager = LangManager.get_instance()
-        lang_data = lang_manager.get_lang_data()
-
+        LangManager.load_module_language_file('baidu')
         # 检查并下载模块文件
         print('开始检查模块文件完整性...')
-        if not _check_module_files(module_dir, download_url, lang_data):
-            print(lang_data['exit_due_to_download_fail'])
+        if not _check_module_files(module_dir, download_url):
+            print(LangManager.get_module_lang_data()['exit_due_to_download_fail'])
             return False
 
-        print(lang_data['check_complete'])
+        print(LangManager.get_module_lang_data()['check_complete'])
         return True
     except Exception as e:
         print(f'补全百度OCR模块失败: {str(e)}')
         return False
+
+def get_module_class():
+    """
+    返回模块的主类
+    这个方法会被ModuleBootstraper调用，用于注册模块
+    
+    Returns:
+        class: 模块的主类
+    """
+    from baidu_ocr_module import BaiduOCRModule
+    return BaiduOCRModule
 
 # 模块初始化代码
 if __name__ == '__main__':

@@ -1,18 +1,12 @@
 # 基本配置定义
 import os
 import sys
+from lib.lang_manager import LangManager
 
-# 尝试导入LangManager
+# 尝试导入路径
 library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if library_dir not in sys.path:
     sys.path.append(library_dir)
-
-try:
-    from lib.lang_manager import LangManager
-except ImportError:
-    print("Failed to import LangManager")
-    sys.exit(1)
-
 
 class DefaultConfig:
     """默认配置类，提供应用程序的基础配置定义和管理方法"""
@@ -57,8 +51,8 @@ class DefaultConfig:
         },
         'OCR_LANGUAGE': {
             'type': 'string',
-            'options': ['zh-cn', 'en', 'ja-jp'],
-            'default': 'zh-cn',
+            'options': ['zh-cn', 'zh-tw', 'en', 'ja-jp','default'],
+            'default': 'default',
             'description_key': 'config_ocr_language',
             'required': False
         }

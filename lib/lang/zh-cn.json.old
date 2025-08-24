@@ -1,5 +1,5 @@
 {
-    "language_mapping": "CHN_ENG",
+    "language_mapping": "zh-cn",
     "current_lang":"zh_cn.json",
     "config_not_empty": "不能为空",
     "config_cannot_use_default": "配置项 {} 不能使用默认值，请在配置文件中设置有效值",
@@ -21,7 +21,7 @@
     "config_validation_options": "必须是以下选项之一: {0}, 当前值: {1}",
     "config_validation_min": "必须大于或等于 {0}, 当前值: {1}",
     "config_validation_max": "必须小于或等于 {0}, 当前值: {1}",
-    "module_not_registered": "模块 '{0}' 未注册",
+
     "config_validation_error_int": "配置验证错误: {0} 必须是整数，当前值: {1}",
     "config_validation_error_options": "配置验证错误: {0} 必须是以下选项之一: {1}, 当前值: {2}",
     "config_validation_error_min": "配置验证错误: {0} 必须大于或等于 {1}, 当前值: {2}",
@@ -89,6 +89,13 @@
     "module_bootstrap_missing": "模块 {} 的 bootstrap.py 文件缺失或下载失败",
     "module_method_missing": "模块 {} 缺少必要的方法: {}",
     "module_bootstrap_error": "引导模块 {} 时出错: {}",
+    "bootstrap_download_failed": "下载模块 '{}' 的bootstrap.py失败: {}",
+    "module_registered": "模块 '{}' 已成功注册",
+    "module_register_fail": "注册模块 '{}' 失败: {}",
+    "registered_modules": "已注册的OCR模块: {}",
+    "ocr_client_init_fail": "OCR客户端初始化失败",
+    "module_not_registered": "模块 '{}' 尚未注册，尝试自动引导...",
+    "module_self_completion_fail": "模块 '{}' 自补全失败，请检查模块配置或依赖。",
 
     "config_output_ocr_debug": "是否输出OCR调试信息到独立文件",
     "config_start_markers": "开始标记: 当检测到这些文字块时开始记录每张图片内识别到的文本，多个标记用逗号分隔",

@@ -17,11 +17,9 @@ from .config_generator import ConfigGenerator
 
 class ConfigLoader:
     """配置加载器类，负责加载应用程序配置文件到全局config_manager"""
-    def __init__(self, loc_manager=None):
-        self._loc_manager = loc_manager or LangManager.get_instance()
-        self._lang_data = self._loc_manager.get_lang_data()
+    def __init__(self):
         
-        self._config_generator = ConfigGenerator(self._loc_manager)
+        self._config_generator = ConfigGenerator()
     
     def load_config(self, module=None):
         """加载配置文件到全局config_manager

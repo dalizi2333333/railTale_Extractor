@@ -1,29 +1,19 @@
 import os
 import sys
 import datetime
+from lib.lang_manager import LangManager
+from .config_manager import ConfigManager
+from .default_config import DefaultConfig
 
-# 尝试导入bootstrap模块
 library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if library_dir not in sys.path:
     sys.path.append(library_dir)
 
-try:
-    from lib.lang_manager import LangManager
-    from .config_manager import ConfigManager
-    print(LangManager.get_lang_data()["language_system_loaded"])
-except ImportError as e:
-    # 尝试使用默认错误消息
-    print(LangManager.get_lang_data()['lang_system_load_fail_full'].format(str(e), os.getcwd(), sys.path))
-    sys.exit(1)
-
-from .default_config import DefaultConfig
-
 class ConfigGenerator:
     """配置生成器类，负责生成应用程序配置文件"""
     def __init__(self):
-        self._lang_data = LangManager.get_lang_data()
-        
-        # 使用全局config_manager实例获取process_dir
+
+        # 获取process_dir
         process_dir = ConfigManager.get_process_dir()
         self._config_path = os.path.join(process_dir, 'config.txt')
 

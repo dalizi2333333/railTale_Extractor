@@ -7,15 +7,16 @@ from lib.lang_manager import LangManager
 from lib.config.default_config import DefaultConfig
 from lib.config.config_ensure import ensure_config
 from lib.config.config_loader import ConfigLoader
+from lib.ocr_core.ocr_module import OCRModule
+from lib.ocr_core.ocr_module_interface import OCRModuleInterface
 
-class ModuleBootstraper:
+class OCRModuleBootstraper:
     """模块引导器，负责OCR模块的自动补全和配置管理"""
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(ModuleBootstraper, cls).__new__(cls)
-            cls._instance._lang_manager = LangManager.get_instance()
+            cls._instance = super(OCRModuleBootstraper, cls).__new__(cls)
         return cls._instance
 
     def bootstrap_module(self, module_name=None):
@@ -35,15 +36,15 @@ class ModuleBootstraper:
         module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module_name)
 
         # 检查模块目录下是否有bootstrap.py
-        bootstrap_path = os.path.join(module_dir, 'bootstrap.py')
-        # 如果目录是新创建的，或者bootstrap.py不存在，则尝试下载
+        bootstrap_path = os.path.join(module_dir, 'module_bootstrap.py')
+        # 如果目录是新创建的，或者module_bootstrap.py不存在，则尝试下载
         if is_newly_created or not os.path.exists(bootstrap_path):
             # 尝试下载bootstrap.py
             if not self._download_bootstrap(module_name, bootstrap_path):
                 print(LangManager.get_lang_data()['module_bootstrap_missing'].format(module_name))
                 return False
 
-        # 加载bootstrap.py
+        # 加载module_bootstrap.py
         try:
             # 将模块目录添加到Python路径
             if module_dir not in sys.path:
@@ -57,7 +58,8 @@ class ModuleBootstraper:
                 'get_required_dependencies',
                 'get_required_config_items',
                 'has_mandatory_config',
-                'complete_module'
+                'complete_module',
+                'get_module_class'
             ]
 
             # 测试能否导入并使用模块内的module_bootstrap内的方法
@@ -92,26 +94,48 @@ class ModuleBootstraper:
                 Returns:
                     bool: 是否补全成功
                 """
-                # 加载模块语言文件
-                LangManager.load_module_language_file(module_dir)
+                # 补全成功，后续会统一注册模块
+                # 此时模块语言文件应该已经加载
                 # 获取模块需要的配置项
                 config_items = module_bootstrap.get_required_config_items()
+                """
+                返回模块需要的配置项
+                这些配置项将被添加到配置文件中
+                
+                Returns:
+                    dict: 包含配置项名称、类型、默认值和描述的字典
+                """
                 # 注册模块配置
                 DefaultConfig.register_module_config(module_name, config_items)
                 # 确保配置文件存在并加载配置
                 if ensure_config(module_name):
                     ConfigLoader.load_config(module_name)
                 # 检查是否有强制配置
-                if module_bootstrap.has_mandatory_config():
+                elif module_bootstrap.has_mandatory_config():
+                    """
+                    返回模块是否有不可为默认值的配置项
+                    如果返回True，当根据complete_module方法补全模块后，程序会退出并提醒用户修改配置
+                    
+                    Returns:
+                        bool: 是否有不可为默认值的配置项
+                    """
                     print(LangManager.get_lang_data()['module_mandatory_config'].format(module_name))
+                    # 有强制配置但配置文件不存在，返回False以在应用层面中断程序
                     return False
-                else:
-                    return True
+                # 注册模块
+                module_class = module_bootstrap.get_module_class()
+                """
+                返回模块的主类
+                这个方法会被ModuleBootstraper调用，用于注册模块
+                
+                Returns:
+                    class: 模块的主类
+                """
+                OCRModule.register_module(module_name, module_class)
+                return True
             else:
-                print(LangManager.get_lang_data()['module_bootstrap_fail'].format(module_name))
+                print(LangManager.get_lang_data()['module_self_completion_fail'].format(module_name))
                 return False
-
-            return True
 
         except Exception as e:
             print(LangManager.get_lang_data()['module_bootstrap_error'].format(module_name, str(e)))
@@ -134,7 +158,7 @@ class ModuleBootstraper:
                 return False
 
             # 构建bootstrap.py的下载URL
-            bootstrap_url = f"{download_url}/ocr_modules/{module_name}/bootstrap.py"
+            bootstrap_url = f"{download_url}/ocr_modules/{module_name}/module_bootstrap.py"
 
             # 下载文件
             response = requests.get(bootstrap_url)
@@ -155,6 +179,5 @@ class ModuleBootstraper:
             print(LangManager.get_lang_data()['bootstrap_download_failed'].format(module_name, str(e)))
             return False
 
-
 # 创建全局实例
-module_bootstraper = ModuleBootstraper()
+module_bootstraper = OCRModuleBootstraper()

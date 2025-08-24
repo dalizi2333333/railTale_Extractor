@@ -29,7 +29,6 @@ def check_dependencies(required_deps):
     
     missing_deps = []
     install_commands = []
-    lang_data = LangManager.get_lang_data()
 
     # 检查每个依赖
     for import_name, dep_info in all_deps.items():
@@ -47,23 +46,23 @@ def check_dependencies(required_deps):
 
     # 如果有缺失的依赖
     if missing_deps:
-        print(lang_data['dependency_missing'].format(', '.join(missing_deps)))
+        print(LangManager.get_lang_data()['dependency_missing'].format(', '.join(missing_deps)))
 
         # 尝试安装依赖
         success = False
         try:
-            print(lang_data['trying_install_deps'])
+            print(LangManager.get_lang_data()['trying_install_deps'])
             for cmd in install_commands:
-                print(f"{lang_data['executing']}: {cmd}")
+                print(f"{LangManager.get_lang_data()['executing']}: {cmd}")
                 result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
                 if result.returncode != 0:
-                    print(f"{lang_data['install_failed']}: {cmd}")
-                    print(f"{lang_data['error_info']}: {result.stderr}")
+                    print(f"{LangManager.get_lang_data()['install_failed']}: {cmd}")
+                    print(f"{LangManager.get_lang_data()['error_info']}: {result.stderr}")
                 else:
-                    print(f"{lang_data['install_success']}: {cmd}")
+                    print(f"{LangManager.get_lang_data()['install_success']}: {cmd}")
             success = True
         except Exception as e:
-            print(f"{lang_data['install_exception']}: {str(e)}")
+            print(f"{LangManager.get_lang_data()['install_exception']}: {str(e)}")
 
         # 生成依赖安装提示文件
         process_dir = ConfigManager.get_process_dir()
@@ -72,17 +71,17 @@ def check_dependencies(required_deps):
 
         guide_file = os.path.join(process_dir, "dependency_installation_guide.txt")
         with open(guide_file, 'w', encoding='utf-8') as f:
-            f.write(lang_data['dependency_guide_title'] + '\n\n')
-            f.write(lang_data['missing_deps_list'] + '\n')
+            f.write(LangManager.get_lang_data()['dependency_guide_title'] + '\n\n')
+            f.write(LangManager.get_lang_data()['missing_deps_list'] + '\n')
             for dep in missing_deps:
                 f.write(f"- {dep}\n")
-            f.write('\n' + lang_data['install_commands_title'] + '\n')
+            f.write('\n' + LangManager.get_lang_data()['install_commands_title'] + '\n')
             for cmd in install_commands:
                 f.write(f"{cmd}\n")
-            f.write('\n' + lang_data['restart_note'])
+            f.write('\n' + LangManager.get_lang_data()['restart_note'])
 
-        print(lang_data['guide_file_created'].format(guide_file))
-        print(lang_data['restart_program'])
+        print(LangManager.get_lang_data()['guide_file_created'].format(guide_file))
+        print(LangManager.get_lang_data()['restart_program'])
         return False
 
     # 所有依赖都满足

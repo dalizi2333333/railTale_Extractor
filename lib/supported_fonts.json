@@ -1,0 +1,14 @@
+{
+    "language_to_font": {
+        "zh-cn": "zh-cn.ttf",
+        "zh-tw": "zh-tw.ttf",
+        "ja": "ja-jp.ttf",
+        "en": "zh-cn.ttf"
+    },
+    "font_to_language": {
+        "zh-cn.ttf": "zh-cn",
+        "zh-tw.ttf": "zh-tw",
+        "ja-jp.ttf": "ja",
+        "en.ttf": "en"
+    }    
+}

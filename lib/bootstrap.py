@@ -371,10 +371,10 @@ def bootstrap(paths=None):
         ConfigLoader().load_config()
 
     # 6. 初始化OCR模块
-    from lib.ocr_module_bootstraper import ModuleBootstraper
-    module_bootstraper = ModuleBootstraper()
+    from lib.ocr_core.ocr_module_bootstraper import OCRModuleBootstraper
+    module_bootstraper = OCRModuleBootstraper()
     if not module_bootstraper.bootstrap_module():
-        print(LangManager.get_lang_data()['module_bootstrap_fail'].format('baidu'))
+        print(LangManager.get_lang_data()['module_bootstrap_fail'].format(ConfigManager.get('OCR_MODULE' , 'baidu')))
         sys.exit(1)
 
     # 7. 处理项目
