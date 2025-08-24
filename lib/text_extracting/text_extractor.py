@@ -61,7 +61,7 @@ class TextExtractor:
 
         # 获取配置
         use_custom_font = ConfigManager.get('USE_CUSTOM_FONT', False)
-        output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', False).lower() == 'true'
+        output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', False)
 
         # 收集OCR调试信息
         if output_ocr_debug:

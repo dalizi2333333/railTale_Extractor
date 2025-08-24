@@ -66,6 +66,7 @@
     
     "text_extractor.py开始": "以下键来自text_extractor.py文件",
     "ocr_recognition_failed": "OCR识别失败",
+    "ocr_processing_failed": "OCR处理失败: {}",
     "image_line_content": "图片 {} 行: 内容=\"{}\"",
     "start_recording_text": "开始记录文本: 检测到\"{}\" (图片 {})",
     "stop_recording_text": "停止记录文本: 检测到停止标记\"{}\" (图片 {})",
@@ -86,7 +87,9 @@
     "font_enhancement_detector.py结束": "以上键来自font_enhancement_detector.py文件",
     
     "其他通用键开始": "以下是未分类的通用键",
+    "ocr_module_load_fail": "加载OCR模块失败: {}",
     "ocr_mapping_load_fail": "加载OCR语言映射文件失败: {}",
+    "text_processing_failed": "文本处理失败: {}",
     "module_bootstrap_fail": "模块引导失败: {}",
     "image_process_error": "处理{}时出错：{}",
     "process_stats": "处理统计: 成功{}张, 失败{}张",

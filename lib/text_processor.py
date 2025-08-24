@@ -45,7 +45,7 @@ class TextProcessor:
         self.output_file = os.path.join(self.process_dir, f'{self.dir_name}.txt')
         self.debug_output_file = os.path.join(self.process_dir, f'{self.dir_name}_ocr_debug.txt')
         # 从配置中获取更多信息
-        self.output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', 'True').lower() == 'true'
+        self.output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', 'False').lower() == 'true'# 因为没储存成布尔值，所以用这个奇淫技巧转换为布尔值
         self.max_vertical_images = int(ConfigManager.get('MAX_VERTICAL_IMAGES', 4))
         # 临时目录，用于存储拼接后的图片
         self.temp_dir = os.path.join(self.process_dir, 'temp')

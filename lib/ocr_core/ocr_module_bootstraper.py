@@ -30,7 +30,7 @@ class OCRModuleBootstraper:
         """
         # 获取模块名称
         if module_name is None:
-            module_name = ConfigManager.get('ocr_module', 'baidu')
+            module_name = ConfigManager.get('OCR_MODULE', 'baidu')
 
         # 获取模块目录
         module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module_name)

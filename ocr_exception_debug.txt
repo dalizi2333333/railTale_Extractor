@@ -1,0 +1,18 @@
+
+=== 异常记录: 2025-08-25 05:28:48 ===
+文件路径: D:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\example\temp\stitched_1_4.png
+异常类型: KeyError
+异常消息: 'config'
+堆栈跟踪:
+Traceback (most recent call last):
+  File "D:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\lib\text_extracting\text_extractor.py", line 188, in process_image
+    text=text
+  File "D:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\lib\text_extracting\text_extractor.py", line 78, in process_text
+    debug_entry = ocr_module.get_recognition_debug_info()
+  File "D:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\lib\ocr_core\ocr_module.py", line 147, in get_recognition_debug_info
+    return self.module_impl.get_recognition_debug_info()
+  File "D:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\lib\ocr_modules\test_module\ocr_test_module.py", line 138, in get_recognition_debug_info
+    config_str = json.dumps(debug_info['config'], ensure_ascii=False, indent=2)
+KeyError: 'config'
+
+======================================

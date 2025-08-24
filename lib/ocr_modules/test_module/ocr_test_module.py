@@ -39,7 +39,7 @@ class OCRTestModule(OCRModuleInterface):
         
         # 尝试获取default_config.py中的配置项
         try:
-            from config.default_config import DefaultConfig
+            from lib.config.default_config import DefaultConfig
             app_config = DefaultConfig.APP_CONFIG_DEFINITIONS
         except ImportError:
             app_config = {'error': '无法导入DefaultConfig'}

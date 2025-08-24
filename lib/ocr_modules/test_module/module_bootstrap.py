@@ -70,5 +70,18 @@ def get_module_class():
     Returns:
         class: 模块的主类
     """
-    from .ocr_test_module import OCRTestModule
-    return OCRTestModule
+    # 使用importlib.util从文件路径直接导入，避免相对导入问题
+    import importlib.util
+    import os
+    # 获取当前模块所在目录
+    module_dir = os.path.dirname(os.path.abspath(__file__))
+    # 构造模块文件路径
+    module_file_path = os.path.join(module_dir, 'ocr_test_module.py')
+    # 创建模块规范
+    spec = importlib.util.spec_from_file_location('ocr_test_module', module_file_path)
+    # 加载模块
+    ocr_module = importlib.util.module_from_spec(spec)
+    # 执行模块
+    spec.loader.exec_module(ocr_module)
+    # 返回模块类
+    return ocr_module.OCRTestModule

@@ -1,6 +1,7 @@
 import os
 
 from lang_manager import LangManager
+from config.config_manager import ConfigManager
 from .ocr_module_interface import OCRModuleInterface
 
 # 默认OCR模块名称
@@ -105,10 +106,10 @@ class OCRModule:
             bool: 加载成功返回True，失败返回False
         """
         try:
-            module_class = self.get_module(self.module_name)
+            module_class = self.get_module(ConfigManager.get('OCR_MODULE', DEFAULT_MODULE_NAME))
             self.module_impl = module_class()
         except ValueError as e:
-            print(LangManager.get_lang_data()['ocr_module_load_fail'].format(self.module_name, str(e)))
+            print(LangManager.get_lang_data()['ocr_module_load_fail'].format(ConfigManager.get('OCR_MODULE', DEFAULT_MODULE_NAME), str(e)))
             self.module_impl = None
 
     def init_ocr_client(self):

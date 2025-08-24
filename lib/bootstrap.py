@@ -196,12 +196,13 @@ def _check_directory_structure(base_path, dir_config, github_prefix, download_ur
 
     # 检查当前目录中的文件
     if 'files' in dir_config:
-        print(lang_data['dir_checking'].format(base_path))
+        #print(lang_data['dir_checking'].format(base_path))
         for file_name in dir_config['files']:
             file_path = os.path.join(base_path, file_name)
             # 检查文件是否存在
             if os.path.exists(file_path):
-                print(lang_data['file_found'].format(file_path))
+                #print(lang_data['file_found'].format(file_path))
+                pass#暂时提示
             else:
                 print(lang_data['file_not_found'].format(file_path))
                 # 构建GitHub路径
