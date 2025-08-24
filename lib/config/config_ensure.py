@@ -20,7 +20,7 @@ def ensure_config(module=None):
     """
     # 导入所需模块
     from .config_manager import ConfigManager
-    from lib.lang_manager import LangManager
+    from lang_manager import LangManager
     
     config_manager = ConfigManager()
     

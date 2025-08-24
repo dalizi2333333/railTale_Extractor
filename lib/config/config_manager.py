@@ -1,6 +1,6 @@
 import os
 import sys
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 
 # 尝试导入bootstrap模块
 library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

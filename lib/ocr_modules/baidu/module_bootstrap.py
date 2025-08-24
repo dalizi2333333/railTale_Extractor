@@ -2,8 +2,8 @@ import os
 import json
 import sys
 
-from lib.lang_manager import LangManager
-from lib.config.config_manager import ConfigManager
+from lang_manager import LangManager
+from config.config_manager import ConfigManager
 
 # 百度OCR模块的bootstrap
 # 此文件由ModuleBootstraper加载和使用，负责模块的依赖管理、配置和初始化
@@ -35,19 +35,19 @@ def get_required_config_items():
     """
     
     return {
-        'baidu_app_id': {
+        'BAIDU_APP_ID': {
             'type': 'str',
             'default': 'your_app_id',
             'description_key': 'baidu_app_id_desc',
             'cannot_use_default': True
         },
-        'baidu_api_key': {
+        'BAIDU_API_KEY': {
             'type': 'str',
             'default': 'your_api_key',
             'description_key': 'baidu_api_key_desc', 
             'cannot_use_default': True
         },
-        'baidu_secret_key': {
+        'BAIDU_SECRET_KEY': {
             'type': 'str',
             'default': 'your_secret_key',
             'description_key': 'baidu_secret_key_desc',

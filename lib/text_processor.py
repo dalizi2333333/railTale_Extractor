@@ -3,11 +3,11 @@ import sys
 import time
 import json
 from PIL import Image
-from lib.lang_manager import LangManager
-from lib.config.config_manager import ConfigManager
+from lang_manager import LangManager
+from config.config_manager import ConfigManager
 
-from lib.ocr_core.ocr_module import OCRModule
-from lib.text_extracting.text_extractor import TextExtractor
+from ocr_core.ocr_module import OCRModule
+from text_extracting.text_extractor import TextExtractor
 
 class TextProcessor:
     """文本处理加载器，负责协调整个图片处理流程
@@ -45,7 +45,7 @@ class TextProcessor:
         self.output_file = os.path.join(self.process_dir, f'{self.dir_name}.txt')
         self.debug_output_file = os.path.join(self.process_dir, f'{self.dir_name}_ocr_debug.txt')
         # 从配置中获取更多信息
-        self.output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', True)
+        self.output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', 'True').lower() == 'true'
         self.max_vertical_images = int(ConfigManager.get('MAX_VERTICAL_IMAGES', 4))
         # 临时目录，用于存储拼接后的图片
         self.temp_dir = os.path.join(self.process_dir, 'temp')
@@ -65,7 +65,7 @@ class TextProcessor:
         """
         try:
             # 检测字体增强
-            from lib.text_extracting.font_enhancement_detector import detect_font_enhancement
+            from text_extracting.font_enhancement_detector import detect_font_enhancement
             detect_font_enhancement()
 
             return True
@@ -191,14 +191,13 @@ class TextProcessor:
                                     'text': result['text']
                                 }
                         except Exception as e:
-                            error_msg = LangManager.get_lang_data()()['image_process_error'].format(stitch_file_path, str(e))
+                            error_msg = LangManager.get_lang_data()['image_process_error'].format(stitch_file_path, str(e))
                             print(error_msg)
                             self.text_extractor.output.append(f'{error_msg}\n')
                             self.text_extractor.error_count += 1
             
             # 写入结果文件
             self.write_results()
-            
             # 写入OCR调试信息文件
             if self.output_ocr_debug:
                 self.write_debug_info(image_files)

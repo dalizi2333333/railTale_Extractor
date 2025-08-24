@@ -7,7 +7,7 @@ if library_dir not in sys.path:
     sys.path.append(library_dir)
 
 # 导入必要的模块
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 from .config_manager import ConfigManager
 
 # 配置管理器通过静态方法使用，无需创建实例
@@ -42,7 +42,6 @@ class ConfigLoader:
         if not config_definitions:
             print(LangManager.get_lang_data()["module_config_not_found"].format(module))
             return {}
-
         if module is None:
             # 主配置
             process_dir = ConfigManager.get_process_dir()
@@ -51,16 +50,7 @@ class ConfigLoader:
             # 模块配置
             # 获取模块目录并构建配置文件路径
             module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module)
-            config_path = os.path.join(module_dir, f'{module}_config.txt')
-
-            # 如果配置文件不存在，生成配置文件
-            if not os.path.exists(config_path):
-                self._config_generator.generate_config(module)
-
-            # 再次检查配置文件是否存在
-            if not os.path.exists(config_path):
-                print(LangManager.get_lang_data()["config_file_not_found"].format(config_path))
-                return {}
+            config_path = os.path.join(module_dir, 'config.txt')
 
         # 初始化配置状态变量
         config_valid = 2  # 0: 不可用, 1: 部分可用(使用了默认值), 2: 完全可用

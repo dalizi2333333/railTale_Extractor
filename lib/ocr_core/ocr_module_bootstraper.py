@@ -2,13 +2,13 @@ import os
 import importlib
 import sys
 import requests
-from lib.config.config_manager import ConfigManager
-from lib.lang_manager import LangManager
-from lib.config.default_config import DefaultConfig
-from lib.config.config_ensure import ensure_config
-from lib.config.config_loader import ConfigLoader
-from lib.ocr_core.ocr_module import OCRModule
-from lib.ocr_core.ocr_module_interface import OCRModuleInterface
+from config.config_manager import ConfigManager
+from lang_manager import LangManager
+from config.default_config import DefaultConfig
+from config.config_ensure import ensure_config
+from config.config_loader import ConfigLoader
+from ocr_core.ocr_module import OCRModule
+from ocr_core.ocr_module_interface import OCRModuleInterface
 
 class OCRModuleBootstraper:
     """模块引导器，负责OCR模块的自动补全和配置管理"""
@@ -30,7 +30,7 @@ class OCRModuleBootstraper:
         """
         # 获取模块名称
         if module_name is None:
-            module_name = ConfigManager.get_config('ocr_module', 'baidu')
+            module_name = ConfigManager.get('ocr_module', 'baidu')
 
         # 获取模块目录
         module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module_name)
@@ -81,7 +81,7 @@ class OCRModuleBootstraper:
 
             # 检查依赖
             if required_deps:
-                from lib.dependency_check import check_dependencies
+                from dependency_check import check_dependencies
                 if not check_dependencies(required_deps):
                     return False
 
@@ -109,7 +109,7 @@ class OCRModuleBootstraper:
                 DefaultConfig.register_module_config(module_name, config_items)
                 # 确保配置文件存在并加载配置
                 if ensure_config(module_name):
-                    ConfigLoader.load_config(module_name)
+                    ConfigLoader().load_config(module_name)# 一个类方法问题硬控我半天
                 # 检查是否有强制配置
                 elif module_bootstrap.has_mandatory_config():
                     """

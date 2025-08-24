@@ -4,8 +4,8 @@ config.txt
 # 忽略测试脚本
 test*.py
 # 忽略测试结果文件
-/example.txt
-/example_ocr_debug.txt
+/example/example.txt
+/example/example_ocr_debug.txt
 
 # 保留示例图片用于README展示
 # /example/*.png

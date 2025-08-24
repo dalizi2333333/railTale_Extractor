@@ -40,7 +40,7 @@ if lib_dir not in sys.path:
 
 # 尝试导入bootstrap功能
 try:
-    from lib.bootstrap import bootstrap
+    from bootstrap import bootstrap
     bootstrap_available = True
 except ImportError:
     print('Failed to import bootstrap module even though file exists.')

@@ -2,8 +2,8 @@ import os
 import sys
 import subprocess
 import importlib
-from lib.lang_manager import LangManager
-from lib.config.config_manager import ConfigManager
+from lang_manager import LangManager
+from config.config_manager import ConfigManager
 
 
 def check_dependencies(required_deps):

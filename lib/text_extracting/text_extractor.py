@@ -1,8 +1,8 @@
 import os
 import time
-from lib.lang_manager import LangManager
-from lib.ocr_core.ocr_module import OCRModule
-from lib.config.config_manager import ConfigManager
+from lang_manager import LangManager
+from ocr_core.ocr_module import OCRModule
+from config.config_manager import ConfigManager
 from PIL import Image
 
 
@@ -61,7 +61,7 @@ class TextExtractor:
 
         # 获取配置
         use_custom_font = ConfigManager.get('USE_CUSTOM_FONT', False)
-        output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', False)
+        output_ocr_debug = ConfigManager.get('OUTPUT_OCR_DEBUG', False).lower() == 'true'
 
         # 收集OCR调试信息
         if output_ocr_debug:

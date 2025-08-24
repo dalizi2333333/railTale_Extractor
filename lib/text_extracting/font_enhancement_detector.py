@@ -1,7 +1,7 @@
 import os
 import json
-from lib.config.config_manager import ConfigManager
-from lib.lang_manager import LangManager
+from config.config_manager import ConfigManager
+from lang_manager import LangManager
 
 class FontEnhancementDetector:
     """字体增强检测器，负责检测字体文件并提供相应的OCR语言设置
@@ -47,7 +47,9 @@ class FontEnhancementDetector:
         try:
             self.ocr_language_mapping = LangManager.get_lang_data()['language_mapping']
             try:
-                font_file_path = os.path.join(os.path.dirname(__file__), 'font_to_language.json')
+                # 使用项目根目录下的supported_fonts.json文件
+                parent_dir = ConfigManager.get_parent_dir()
+                font_file_path = os.path.join(parent_dir, 'lib', 'supported_fonts.json')
                 with open(font_file_path, 'r', encoding='utf-8') as f:
                     font_data = json.load(f)
                     self.font_to_language = font_data.get('font_to_language', {})

@@ -1,5 +1,5 @@
 import json
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 
 class BaiduOCRDebugUtils:
     """百度OCR调试工具类"""

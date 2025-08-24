@@ -1,10 +1,10 @@
 import os
 import json
-from lib.ocr_core.ocr_module_interface import OCRModuleInterface
-from .debug_utils import BaiduOCRDebugUtils
-from lib.config.config_manager import ConfigManager
+from ocr_core.ocr_module_interface import OCRModuleInterface
+from ocr_modules.baidu.debug_utils import BaiduOCRDebugUtils
+from config.config_manager import ConfigManager
 from aip import AipOcr
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 
 class BaiduOCRModule(OCRModuleInterface):
     """百度OCR模块实现"""
@@ -38,9 +38,9 @@ class BaiduOCRModule(OCRModuleInterface):
         """初始化百度OCR客户端和特有选项"""
         try:
             if self.app_id is None or self.api_key is None or self.secret_key is None:
-                self.app_id = ConfigManager.get('baidu_app_id', '')
-                self.api_key = ConfigManager.get('baidu_api_key', '')
-                self.secret_key = ConfigManager.get('baidu_secret_key', '')
+                self.app_id = ConfigManager.get('BAIDU_APP_ID', '')
+                self.api_key = ConfigManager.get('BAIDU_API_KEY', '')
+                self.secret_key = ConfigManager.get('BAIDU_SECRET_KEY', '')
 
             # 创建OCR客户端
             self.ocr_client = AipOcr(self.app_id, self.api_key, self.secret_key)
@@ -101,7 +101,7 @@ class BaiduOCRModule(OCRModuleInterface):
         Returns:
             str: 识别出的文本，失败时返回None
         """
-        from lib.config.config_manager import ConfigManager
+        from config.config_manager import ConfigManager
         if self.ocr_client is None:
             if not self.init_ocr_client():
                 return None
@@ -150,7 +150,7 @@ class BaiduOCRModule(OCRModuleInterface):
         Returns:
             str: 格式化的调试信息字符串，包含文件名、识别模式、识别文本和详细调试信息
         """
-        from lib.config.config_manager import ConfigManager
+        from config.config_manager import ConfigManager
         if not self.last_recognition_debug_info or not self.last_recognized_text:
             return ""
 

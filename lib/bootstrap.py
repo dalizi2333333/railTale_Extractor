@@ -353,16 +353,16 @@ def bootstrap(paths=None):
     _check_and_download_files(paths, lang_data)
 
     # 4. 初始化语言管理器
-    from lib.lang_manager import LangManager
+    from lang_manager import LangManager
     lang_manager = LangManager.initialize(lang_data)
 
     # 5. 初始化配置管理器
-    from lib.config.config_manager import ConfigManager
+    from config.config_manager import ConfigManager
     config_manager = ConfigManager.initialize(paths)
 
     # 加载配置文件
-    from lib.config.config_ensure import ensure_config
-    from lib.config.config_loader import ConfigLoader
+    from config.config_ensure import ensure_config
+    from config.config_loader import ConfigLoader
 
     # 确保配置文件存在并加载默认配置
 #    if ensure_config():
@@ -372,15 +372,15 @@ def bootstrap(paths=None):
         ConfigLoader().load_config()
 
     # 6. 初始化OCR模块
-    from lib.ocr_core.ocr_module_bootstraper import OCRModuleBootstraper
+    from ocr_core.ocr_module_bootstraper import OCRModuleBootstraper
     module_bootstraper = OCRModuleBootstraper()
     if not module_bootstraper.bootstrap_module():
         print(LangManager.get_lang_data()['module_bootstrap_fail'].format(ConfigManager.get('OCR_MODULE' , 'baidu')))
         sys.exit(1)
 
     # 7. 处理项目
-    from lib.text_processor import TextProcessor
-    text = TextProcessor.run()
+    from text_processor import TextProcessor
+    text = TextProcessor().run()
 
     return {
         'config_manager': config_manager,

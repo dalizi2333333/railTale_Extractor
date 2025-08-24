@@ -1,9 +1,9 @@
 import os
 import json
 import datetime
-from lib.ocr_core.ocr_module_interface import OCRModuleInterface
-from lib.config.config_manager import ConfigManager
-from lib.lang_manager import LangManager
+from ocr_core.ocr_module_interface import OCRModuleInterface
+from config.config_manager import ConfigManager
+from lang_manager import LangManager
 
 class OCRTestModule(OCRModuleInterface):
     """测试OCR模块实现，用于调试主系统"""
@@ -39,7 +39,7 @@ class OCRTestModule(OCRModuleInterface):
         
         # 尝试获取default_config.py中的配置项
         try:
-            from lib.config.default_config import DefaultConfig
+            from config.default_config import DefaultConfig
             app_config = DefaultConfig.APP_CONFIG_DEFINITIONS
         except ImportError:
             app_config = {'error': '无法导入DefaultConfig'}

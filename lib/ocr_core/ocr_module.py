@@ -1,6 +1,6 @@
 import os
 
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 from .ocr_module_interface import OCRModuleInterface
 
 # 默认OCR模块名称

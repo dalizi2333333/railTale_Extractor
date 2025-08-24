@@ -1,7 +1,7 @@
 # 基本配置定义
 import os
 import sys
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 
 # 尝试导入路径
 library_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,8 +14,8 @@ class DefaultConfig:
     APP_CONFIG_DEFINITIONS = {
         'OUTPUT_OCR_DEBUG': {
             'type': 'boolean',
-            'options': ['true', 'false'],
-            'default': 'false',
+            'options': ['True', 'False'],
+            'default': 'False',
             'description_key': 'config_output_ocr_debug',
             'required': False
         },
@@ -36,7 +36,7 @@ class DefaultConfig:
         'OCR_MODULE': {
             'type': 'string',
             'subtype': 'option',
-            'options': ['baidu'],
+            'options': ['baidu','test_module'],
             'default': 'baidu',
             'description_key': 'config_ocr_module',
             'required': True

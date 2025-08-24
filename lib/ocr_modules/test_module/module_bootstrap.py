@@ -53,7 +53,7 @@ def complete_module():
         bool: 是否补全成功
     """
     # 加载模块语言文件
-    from lib.lang_manager import LangManager
+    from lang_manager import LangManager
     import os
     # 获取当前模块路径
     module_path = os.path.dirname(os.path.abspath(__file__))

@@ -1,7 +1,7 @@
 import os
 import sys
 import datetime
-from lib.lang_manager import LangManager
+from lang_manager import LangManager
 from .config_manager import ConfigManager
 from .default_config import DefaultConfig
 
@@ -38,7 +38,7 @@ class ConfigGenerator:
         if module is not None:
             # 使用get_ocr_module_dir获取模块路径
             module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module)
-            config_path = os.path.join(module_dir, f'{module}_config.txt')
+            config_path = os.path.join(module_dir, 'config.txt')
             config_type = f"{LangManager.get_lang_data()['config_module_file']} ({module})"
         else:
             config_path = os.path.join(process_dir, 'config.txt')
