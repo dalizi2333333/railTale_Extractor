@@ -11,10 +11,9 @@ DIRECTORY_STRUCTURE = {
         'files': [
                 '__init__.py',
                 'dependency_check.py',
-                'font_enhancement.py',
-                'ocr_language_mapping.json',
-                'ocr_module_loader.py',
-                'text_processing_loader.py'
+                'lang_manager.py',
+                'supported_fonts.json',
+                'text_processor.py'
             ],
         'subdirectories': {
             'ocr_core': {
@@ -22,24 +21,25 @@ DIRECTORY_STRUCTURE = {
                     '__init__.py',
                     'ocr_module.py',
                     'ocr_module_interface.py',
-                    'ocr_module_registry.py'
+                    'ocr_module_bootstraper.py'
                 ]
             },
             'lang': {},
             'config': {
                 'files': [
                     '__init__.py',
-                    'base_config.py',
+                    'config_ensure.py',
                     'config_generator.py',
                     'config_loader.py',
                     'config_manager.py',
-                    'module_config.py'
+                    'default_config.py'
                 ]
             },
-            'text_processing': {
+            'text_extracting': {
                 'files': [
                     '__init__.py',
-                    'text_processor.py'
+                    'font_enhancement_detector.py',
+                    'text_extractor.py'
                 ]
             },
             'ocr_modules': {}
@@ -341,6 +341,7 @@ def bootstrap(paths=None):
             - config_manager: 配置管理器实例
             - lang_manager: 语言管理器实例
             - paths: 路径配置字典
+            - text: 提取的文本数据
     """
     # 1. 获取路径配置
     paths = _get_paths(paths)
@@ -378,12 +379,13 @@ def bootstrap(paths=None):
         sys.exit(1)
 
     # 7. 处理项目
-    # from lib.project_processor import ProjectProcessor
-    # ProjectProcessor.process()
+    from lib.text_processor import TextProcessor
+    text = TextProcessor.run()
 
     return {
         'config_manager': config_manager,
         'lang_manager': lang_manager,
         'paths': paths,
-        'exists_config': exists_config
+        'exists_config': exists_config,
+        'text': text
     }

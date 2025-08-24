@@ -42,6 +42,7 @@
 - 配置文件相关提示
 - 依赖库安装相关提示
 - 错误信息提示
+- 还有更多理都理不清
 
 ### 添加新语言
 1. 在`lib/lang`目录下创建新的语言文件，文件名格式为`{language-code}.json`
@@ -151,57 +152,54 @@
 │   ├── 2.png             # 示例图片2
 │   ├── 3.png             # 示例图片3
 │   ├── 4.png             # 示例图片4
-│   └── process_images.py # 主处理脚本
-├── lib/                  # 库目录，包含各种功能模块
-│   ├── __init__.py       # 包初始化文件
-│   ├── bootstrap.py      # 引导程序模块
-│   ├── config/           # 配置管理目录
-│   │   ├── __init__.py   # 配置包初始化文件
-│   │   ├── base_config.py # 基础配置定义
-│   │   ├── config_generator.py # 配置生成器
-│   │   ├── config_loader.py # 配置加载器
-│   │   ├── config_manager.py # 配置管理器
-│   │   └── module_config.py # 模块配置
-│   ├── dependency_check.py # 依赖库检查模块
-│   ├── font_enhancement.py # 字体增强模块
-│   ├── lang/             # 语言文件目录
-│   │   ├── en.json       # 英文语言文件
-│   │   └── zh-cn.json    # 中文语言文件
-│   ├── ocr_core/         # OCR核心模块
-│   │   ├── __init__.py   # OCR核心包初始化
-│   │   ├── ocr_module.py # OCR模块基类
-│   │   ├── ocr_module_interface.py # OCR模块接口
-│   │   └── ocr_module_registry.py # OCR模块注册表
-│   ├── ocr_language_mapping.json # OCR语言映射文件
-│   ├── ocr_module_loader.py # OCR模块加载器
-│   ├── ocr_modules/      # OCR模块目录
-│   │   └── baidu/        # 百度OCR模块目录
-│   │       ├── lang/     # 语言文件目录
-│   │       │   ├── en.json # 英文语言文件
-│   │       │   └── zh-cn.json # 中文语言文件
-│   │       ├── __init__.py # 百度OCR模块包初始化
-│   │       ├── baidu_ocr_module.py # 百度OCR模块
-│   │       ├── baidu_ocr_config.py # 百度OCR模块配置
-│   │       └── baidu_ocr_api.py # 百度OCR模块API
-│   ├── text_processing/  # 文本处理模块
-│   │   ├── __init__.py   # 文本处理包初始化
-│   │   └── text_processor.py # 文本处理器
-│   └── text_processing_loader.py # 文本处理加载器
-└── zh-cn.ttf             # 默认字体文件
+│   ├── process_images.py # 主处理脚本
+│   └── zh-cn.ttf         # 示例字体文件
+└── lib/                  # 库目录，包含各种功能模块
+    ├── __init__.py       # 包初始化文件
+    ├── bootstrap.py      # 引导程序模块
+    ├── config/           # 配置管理目录
+    │   ├── __init__.py   # 配置包初始化文件
+    │   ├── config_ensure.py # 配置确保模块
+    │   ├── config_generator.py # 配置生成器
+    │   ├── config_loader.py # 配置加载器
+    │   ├── config_manager.py # 配置管理器
+    │   └── default_config.py # 默认配置定义
+    ├── dependency_check.py # 依赖库检查模块
+    ├── lang/             # 语言文件目录
+    │   ├── en.json       # 英文语言文件
+    │   └── zh-cn.json    # 中文语言文件
+    ├── lang_manager.py   # 语言管理器
+    ├── ocr_core/         # OCR核心模块
+    │   ├── __init__.py   # OCR核心包初始化
+    │   ├── ocr_module.py # OCR模块基类
+    │   ├── ocr_module_interface.py # OCR模块接口
+    │   └── ocr_module_bootstraper.py # OCR模块引导器
+    ├── ocr_modules/      # OCR模块目录
+    │   └── baidu/        # 百度OCR模块目录（详细结构见模块内部定义）
+    ├── supported_fonts.json # 支持的字体列表
+    ├── text_extracting/  # 文本提取模块
+    │   ├── __init__.py   # 文本提取包初始化
+    │   ├── font_enhancement_detector.py # 字体增强检测器
+    │   └── text_extractor.py # 文本提取器
+    └── text_processor.py # 文本处理器
+
+
 
 ```
 
 ### 模块功能说明
 - `process_images.py`: 主处理脚本，负责图片处理流程控制
-- `lib/config/*`: 配置文件读取和解析模块，包含基础配置、模块配置、配置生成器、配置加载器、配置管理器
+- `lib/config/*`: 配置文件读取和解析模块，包含配置确保、配置生成器、配置加载器、配置管理器和默认配置
 - `lib/dependency_check.py`: 依赖库检查模块
-- `lib/font_enhancement.py`: 字体增强模块，用于提高OCR识别准确率
-- `lib/ocr_language_mapping.json`: OCR语言映射文件，定义了语言代码与OCR API语言参数的对应关系
-- `lib/ocr_modules/*`: OCR模块目录，包含不同OCR引擎的实现，如百度OCR、Tesseract等
-- `lib/text_processing/*`: 文本处理模块，包含文本处理函数和类，如文本清理、格式化等
-- `lib/text_processing_loader.py`: 文本处理加载器，负责加载文本处理模块
+- `lib/lang/*`: 语言文件目录，包含各语言的翻译文本
+- `lib/lang_manager.py`: 语言管理器，负责加载和获取语言文本
 - `lib/ocr_core/*`: OCR模块核心，用于支持不同的OCR API
-- `lib/ocr_module_loader.py`: OCR模块加载器，负责加载OCR模块
+- `lib/ocr_modules/*`: OCR模块目录，包含不同OCR引擎的实现，如百度OCR等
+  - 每个OCR模块的详细结构由其内部的`module_bootstrap.py`文件定义
+- `lib/supported_fonts.json`: 支持的字体列表
+- `lib/text_extracting/*`: 文本提取模块，包含字体增强检测和文本提取功能
+- `lib/text_processor.py`: 文本处理器，负责处理提取的文本
+- `lib/bootstrap.py`: 引导程序模块，负责项目的初始化和目录结构管理
 
 ## 配置说明
 配置文件`example/config.txt`包含以下参数：
@@ -213,7 +211,7 @@
 - `OCR_LANGUAGE`：OCR识别语言（默认zh-cn）
 
 ## 注意事项
-1. 可将游戏字体文件（如zh-cn.ttf）放入你想要处理图片的目录的父级目录（例如上述示例的`/path/to/project/`）以提高识别准确率
+1. 可将游戏字体文件（如zh-cn.ttf）放入你想要处理图片的目录以提高识别准确率
 2. OCR API一般有免费调用次数限制，请合理使用
 
 ## 贡献

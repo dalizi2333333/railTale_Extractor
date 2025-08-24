@@ -122,7 +122,7 @@ def _check_module_files(module_dir, download_url):
 
     # 定义模块目录结构
     MODULE_STRUCTURE = {
-        'files': ['__init__.py', 'baidu_ocr_module.py', 'module_bootstrap.py', 'debug_utils.py', 'lang_utils.py'],
+        'files': ['__init__.py', 'baidu_ocr_module.py', 'module_bootstrap.py', 'debug_utils.py'],
         'subdirectories': {
             'lang': {
                 'files': ['zh-cn.json', 'en.json']
@@ -221,9 +221,9 @@ def complete_module():
                 print(f'找到语言文件: {lang_file}')
 
         # 加载语言数据
-        LangManager.load_module_language_file('baidu')
+        LangManager.load_module_language_file(module_dir)
         # 检查并下载模块文件
-        print('开始检查模块文件完整性...')
+        print(LangManager.get_module_lang_data()['check_start'])
         if not _check_module_files(module_dir, download_url):
             print(LangManager.get_module_lang_data()['exit_due_to_download_fail'])
             return False
@@ -231,7 +231,7 @@ def complete_module():
         print(LangManager.get_module_lang_data()['check_complete'])
         return True
     except Exception as e:
-        print(f'补全百度OCR模块失败: {str(e)}')
+        print(LangManager.get_module_lang_data()['complete_fail'].format(str(e)))
         return False
 
 def get_module_class():

@@ -1,4 +1,18 @@
 {
+    "dir_not_found": "目录未找到: {}",
+    "dir_created": "已创建目录: {}",
+    "dir_checking": "正在检查目录: {}",
+    "file_found": "找到文件: {}",
+    "file_not_found": "未找到文件: {}",
+    "download_success": "下载成功: {}",
+    "download_fail": "下载失败 ({}) : {}",
+    "retry_attempt": "重试尝试 {}...",
+    "max_retries_reached": "已达到最大重试次数 ({})",
+    "critical_file_download_fail": "关键文件下载失败: {}",
+    "check_start": "开始检查模块文件...",
+    "check_complete": "检查完成",
+    "exit_due_to_download_fail": "由于文件下载失败，程序退出",
+    "complete_fail": "模块补全失败: {}",
     "baidu_config_created": "已创建百度OCR配置文件: {}",
     "baidu_config_need_edit": "请编辑该文件并填入您的百度OCR API密钥，然后重新运行脚本",
     "baidu_config_create_fail": "创建百度OCR配置文件失败: {}",
@@ -40,6 +54,4 @@
     "module_mandatory_config": "模块 {} 强制配置缺失，请检查配置文件",
     "module_bootstrap_fail": "模块 {} 引导失败",
     "config_cannot_use_default": "配置文件 {} 不能使用默认值，请检查配置文件"
-
-
 }

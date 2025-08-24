@@ -64,10 +64,9 @@ class TextProcessor:
             bool: 初始化成功返回True，失败返回False
         """
         try:
-            # 加载OCR模块
-            from lib.text_extracting.ocr_module_loader import load_ocr_module
-            # 这里不需要保存ocr_module实例，因为TextExtractor会直接使用单例
-            load_ocr_module()
+            # 检测字体增强
+            from lib.text_extracting.font_enhancement_detector import detect_font_enhancement
+            detect_font_enhancement()
 
             return True
         except Exception as e:
@@ -240,12 +239,7 @@ class TextProcessor:
             # 写入字体提示信息
             if use_custom_font:
                 # 检测使用的字体类型并提示
-                if font_path and font_path.endswith('ja-jp.ttf'):
-                    f.write('\n' + LangManager.get_lang_data()['font_detected'].format('ja-jp.ttf', LangManager.get_lang_data()['font_ja_jp_name']) + '\n')
-                elif font_path and font_path.endswith('zh-cn.ttf'):
-                    f.write('\n' + LangManager.get_lang_data()['font_detected'].format('zh-cn.ttf', LangManager.get_lang_data()['font_zh_cn_name']) + '\n')
-                elif font_path and font_path.endswith('zh-tw.ttf'):
-                    f.write('\n' + LangManager.get_lang_data()['font_detected'].format('zh-tw.ttf', LangManager.get_lang_data()['font_zh_tw_name']) + '\n')
+                f.write('\n' + LangManager.get_lang_data()['single_font_detected'].format(font_path) + '\n')
             else:
                 # 区分没有字体文件和存在多个字体文件的情况
                 if len(found_fonts) == 0:
@@ -269,12 +263,7 @@ class TextProcessor:
         # 输出字体提示信息
         if use_custom_font:
             # 检测使用的字体类型并提示
-            if font_path and font_path.endswith('ja-jp.ttf'):
-                print('\n' + LangManager.get_lang_data()['font_detected'].format('ja-jp.ttf', LangManager.get_lang_data()['font_ja_jp_name']))
-            elif font_path and font_path.endswith('zh-cn.ttf'):
-                print('\n' + LangManager.get_lang_data()['font_detected'].format('zh-cn.ttf', LangManager.get_lang_data()['font_zh_cn_name']))
-            elif font_path and font_path.endswith('zh-tw.ttf'):
-                print('\n' + LangManager.get_lang_data()['font_detected'].format('zh-tw.ttf', LangManager.get_lang_data()['font_zh_tw_name']))
+            print('\n' + LangManager.get_lang_data()['single_font_detected'].format(font_path))
         else:
             # 区分没有字体文件和存在多个字体文件的情况
             if len(found_fonts) == 0:

@@ -7,7 +7,6 @@ if library_dir not in sys.path:
     sys.path.append(library_dir)
 
 from .default_config import DefaultConfig
-from .config_generator import ConfigGenerator
 
 
 def ensure_config(module=None):
