@@ -1,4 +1,7 @@
 {
+    "baidu_app_id_desc": "Baidu OCR App ID",
+    "baidu_api_key_desc": "Baidu OCR API Key",
+    "baidu_secret_key_desc": "Baidu OCR Secret Key",
     "dir_not_found": "Directory not found: {}",
     "dir_created": "Directory created: {}",
     "dir_checking": "Checking directory: {}",

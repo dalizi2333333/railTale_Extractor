@@ -49,14 +49,15 @@ class ConfigGenerator:
             os.makedirs(os.path.dirname(config_path), exist_ok=True)
 
             with open(config_path, 'w', encoding='utf-8') as f:
-                f.write("# {}\n".format(
+                f.write("# {}".format(
                     LangManager.get_lang_data()['config_auto_generated'].format(config_type)
                 ))
-                f.write("# {} {}\n".format(
-                    LangManager.get_lang_data()['config_auto_generated'].format(config_type),
-                    LangManager.get_lang_data()['config_last_generated_time'],
-                    datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                f.write("\n# {}".format(
+                    LangManager.get_lang_data()['config_last_generated_time'].format(
+                        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    )
                 ))
+                f.write("\n\n")
 
                 # 遍历配置定义，生成配置项
                 for key, prop in config_definitions.items():

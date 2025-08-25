@@ -28,6 +28,15 @@
     "module_config_definition_not_found": "无法获取模块 '{}' 的配置定义",
     "config_ensure.py结束": "以上键来自config_ensure.py文件",
 
+    "配置文件键开始": "以下键用于配置文件中的本地化描述",
+    "config_output_ocr_debug": "是否输出OCR调试信息",
+    "config_start_markers": "文本提取开始标记（多个标记用逗号分隔）",
+    "config_stop_markers": "文本提取停止标记（多个标记用逗号分隔）",
+    "config_ocr_module": "OCR模块选择",
+    "config_max_vertical_images": "最大垂直拼接图片数量",
+    "config_ocr_language": "OCR识别语言",
+    "配置文件键结束": "以上键用于配置文件中的本地化描述",
+
     "config_generator.py开始": "以下键来自config_generator.py文件",
     "config_module_file": "模块配置文件",
     "config_main_file": "主配置文件",

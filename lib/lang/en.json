@@ -40,6 +40,15 @@
     "config_generate_fail": "Failed to generate configuration file: {}",
     "config_generator.py结束": "End of keys from config_generator.py file",
 
+    "配置文件键开始": "Configuration file keys start",
+    "config_output_ocr_debug": "Whether to output OCR debug information",
+    "config_start_markers": "Text extraction start markers (separate multiple markers with commas)",
+    "config_stop_markers": "Text extraction stop markers (separate multiple markers with commas)",
+    "config_ocr_module": "OCR module selection",
+    "config_max_vertical_images": "Maximum number of vertically stitched images",
+    "config_ocr_language": "OCR recognition language",
+    "配置文件键结束": "Configuration file keys end",
+
     "config_loader.py开始": "Keys from config_loader.py file",
     "config_file_not_found": "Configuration file not found: {}",
     "config_cannot_use_default": "Configuration item {} cannot use default value",

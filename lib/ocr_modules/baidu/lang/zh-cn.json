@@ -1,4 +1,7 @@
 {
+    "baidu_app_id_desc": "百度OCR应用ID",
+    "baidu_api_key_desc": "百度OCR API密钥",
+    "baidu_secret_key_desc": "百度OCR密钥",
     "dir_not_found": "目录未找到: {}",
     "dir_created": "已创建目录: {}",
     "dir_checking": "正在检查目录: {}",
