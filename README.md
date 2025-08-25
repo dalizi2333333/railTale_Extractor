@@ -23,11 +23,11 @@
 3. 不同的OCR API需要安装不同的库，程序会自动提示需要的库
 4. （可选）安装游戏字体以提高识别准确率，注意目前只接受“zh-cn.ttf”，“zh-tw.ttf”，“ja-jp.ttf”这三个字体文件名，分别对应崩坏星穹铁道本地游戏资源中的三种字体
 
-## 使用方法（还没测试）
-1. 下载脚本文件`process_images.py`到你存放游戏截图的目录
+## 使用方法
+1. 在release里下载脚本文件`一键下崽.py`到你存放游戏截图的目录（可以随意重命名，不影响使用）
 2. 在[百度AI开放平台](https://ai.baidu.com/)注册账号并创建OCR应用，获取APP_ID、API_KEY和SECRET_KEY
-3. 运行脚本`process_images.py`，补全库里最基本的文件，再次启动，补全完整的lib目录，然后在`脚本父级所在目录/lib/ocr_modules/你选择的OCR模块/config.txt`内填入你的OCR API密钥
-4. 再次运行脚本`process_images.py`，即可开始识别截图
+3. 运行脚本`一键下崽.py`，补全库里最基本的文件，再次启动，补全完整的lib目录，然后在`脚本父级所在目录/lib/ocr_modules/你选择的OCR模块/config.txt`内填入你的OCR API密钥
+4. 再次运行脚本`一键下崽.py`，即可开始识别截图
 5. 提取结果将保存到以当前目录名称命名，目录旁的文本文件中（例如，若在`.../example`目录运行，则保存为`.../example.txt`）
 6. 如果想使用其他模块（如test_module），需要修改配置文件中的OCR_MODULE配置项，配置文件所在位置为`脚本所在目录`
 
