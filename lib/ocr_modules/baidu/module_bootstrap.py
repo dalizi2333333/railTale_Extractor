@@ -137,7 +137,7 @@ def _download_file_from_github(github_path, local_path, download_url, default_la
     return False
 
 
-def _check_module_files(module_dir, download_url):
+def _check_module_files(module_dir, download_url, default_lang_data=None):
     """检查模块文件结构并下载缺失文件
 
     Args:
@@ -160,31 +160,73 @@ def _check_module_files(module_dir, download_url):
     }
 
     # 递归检查目录结构
-    def _check_dir_structure(base_path, dir_config, github_prefix):
+    def _check_dir_structure(base_path, dir_config, github_prefix, default_lang_data=None):
         nonlocal critical_files_downloaded
 
         # 检查当前目录是否存在
         if not os.path.exists(base_path):
-            print(LangManager.get_module_lang_data()['dir_not_found'].format(base_path))
+            # 为dir_not_found添加异常处理
+            try:
+                print(LangManager.get_module_lang_data()['dir_not_found'].format(base_path))
+            except (KeyError, Exception):
+                if default_lang_data and 'dir_not_found' in default_lang_data:
+                    print(default_lang_data['dir_not_found'].format(base_path))
+                else:
+                    print(f'目录未找到: {base_path}')
             os.makedirs(base_path, exist_ok=True)
-            print(LangManager.get_module_lang_data()['dir_created'].format(base_path))
+            # 为dir_created添加异常处理
+            try:
+                print(LangManager.get_module_lang_data()['dir_created'].format(base_path))
+            except (KeyError, Exception):
+                if default_lang_data and 'dir_created' in default_lang_data:
+                    print(default_lang_data['dir_created'].format(base_path))
+                else:
+                    print(f'已创建目录: {base_path}')
 
         # 检查当前目录中的文件
         if 'files' in dir_config:
-            print(LangManager.get_module_lang_data()['dir_checking'].format(base_path))
+            # 为dir_checking添加异常处理
+            try:
+                print(LangManager.get_module_lang_data()['dir_checking'].format(base_path))
+            except (KeyError, Exception):
+                if default_lang_data and 'dir_checking' in default_lang_data:
+                    print(default_lang_data['dir_checking'].format(base_path))
+                else:
+                    print(f'正在检查目录: {base_path}')
             for file_name in dir_config['files']:
                 file_path = os.path.join(base_path, file_name)
                 # 检查文件是否存在
                 if os.path.exists(file_path):
-                    print(LangManager.get_module_lang_data()['file_found'].format(file_path))
+                    # 为file_found添加异常处理
+                    try:
+                        print(LangManager.get_module_lang_data()['file_found'].format(file_path))
+                    except (KeyError, Exception):
+                        if default_lang_data and 'file_found' in default_lang_data:
+                            print(default_lang_data['file_found'].format(file_path))
+                        else:
+                            print(f'找到文件: {file_path}')
                 else:
-                    print(LangManager.get_module_lang_data()['file_not_found'].format(file_path))
+                    # 为file_not_found添加异常处理
+                    try:
+                        print(LangManager.get_module_lang_data()['file_not_found'].format(file_path))
+                    except (KeyError, Exception):
+                        if default_lang_data and 'file_not_found' in default_lang_data:
+                            print(default_lang_data['file_not_found'].format(file_path))
+                        else:
+                            print(f'未找到文件: {file_path}')
                     # 构建GitHub路径
                     github_path = f'{github_prefix}/{file_name}' if github_prefix else file_name
                     # 从GitHub下载文件
                     if not _download_file_from_github(github_path, file_path, download_url):
                         critical_files_downloaded = False
-                        print(LangManager.get_module_lang_data()['critical_file_download_fail'].format(github_path))
+                        # 为critical_file_download_fail添加异常处理
+                        try:
+                            print(LangManager.get_module_lang_data()['critical_file_download_fail'].format(github_path))
+                        except (KeyError, Exception):
+                            if default_lang_data and 'critical_file_download_fail' in default_lang_data:
+                                print(default_lang_data['critical_file_download_fail'].format(github_path))
+                            else:
+                                print(f'关键文件下载失败: {github_path}')
 
         # 递归检查子目录
         if 'subdirectories' in dir_config:
@@ -192,10 +234,12 @@ def _check_module_files(module_dir, download_url):
                 subdir_path = os.path.join(base_path, subdir_name)
                 # 构建子目录的GitHub前缀
                 new_github_prefix = f'{github_prefix}/{subdir_name}' if github_prefix else subdir_name
-                _check_dir_structure(subdir_path, subdir_config, new_github_prefix)
+                # 传递default_lang_data参数给递归调用
+                _check_dir_structure(subdir_path, subdir_config, new_github_prefix, default_lang_data)
 
     # 开始检查模块目录结构
-    _check_dir_structure(module_dir, MODULE_STRUCTURE, '')
+    # 传递default_lang_data参数
+    _check_dir_structure(module_dir, MODULE_STRUCTURE, '', default_lang_data)
     return critical_files_downloaded
 
 
