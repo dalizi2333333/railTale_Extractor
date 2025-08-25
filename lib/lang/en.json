@@ -61,6 +61,8 @@
     "text_processor.py开始": "Keys from text_processor.py file",
     "init_fail": "Initialization failed: {}",
     "script_execution_error": "Script execution error: {}",
+    "temp_files_cleaned": "Temporary files cleaned: {}",
+    "cleanup_error": "Error cleaning temporary files: {}",
     "text_processor.py结束": "End of keys from text_processor.py file",
 
     

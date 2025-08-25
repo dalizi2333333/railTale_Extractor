@@ -61,6 +61,8 @@
     "text_processor.py开始": "以下键来自text_processor.py文件",
     "init_fail": "初始化失败: {}",
     "script_execution_error": "脚本执行错误: {}",
+    "temp_files_cleaned": "临时文件已清理: {}",
+    "cleanup_error": "清理临时文件时出错: {}",
     "text_processor.py结束": "以上键来自text_processor.py文件",
 
     

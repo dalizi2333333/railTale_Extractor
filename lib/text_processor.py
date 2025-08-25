@@ -201,7 +201,8 @@ class TextProcessor:
             # 写入OCR调试信息文件
             if self.output_ocr_debug:
                 self.write_debug_info(image_files)
-            
+            # 清理临时文件
+            self.cleanup()
             return self.processed_results
         except Exception as e:
             print(LangManager.get_lang_data()['script_execution_error'].format(str(e)))
@@ -303,6 +304,27 @@ class TextProcessor:
             f.write(''.join(ocr_debug_info))
         print(LangManager.get_lang_data()['ocr_debug_info_saved'].format(self.debug_output_file))
 
+    def cleanup(self):
+        """清理临时文件和目录
+
+        删除处理过程中创建的临时目录及其包含的所有文件。
+        """
+        try:
+            if os.path.exists(self.temp_dir):
+                # 遍历临时目录中的所有文件并删除
+                for root, dirs, files in os.walk(self.temp_dir, topdown=False):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        os.remove(file_path)
+                    for dir in dirs:
+                        dir_path = os.path.join(root, dir)
+                        os.rmdir(dir_path)
+                # 删除临时目录
+                os.rmdir(self.temp_dir)
+                print(LangManager.get_lang_data()['temp_files_cleaned'].format(self.temp_dir))
+        except Exception as e:
+            error_msg = LangManager.get_lang_data()['cleanup_error'].format(str(e))
+            print(error_msg)
     def run(self):
         """运行整个处理流程
 
