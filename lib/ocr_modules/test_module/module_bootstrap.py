@@ -47,19 +47,69 @@ def has_mandatory_config():
 def complete_module():
     """
     补全模块的方式
-    负责初始化模块所需的语言文件和其他资源
+    负责初始化模块所需的语言文件和其他资源，包括从网络下载必要文件
 
     Returns:
         bool: 是否补全成功
     """
-    # 加载模块语言文件
-    from lang_manager import LangManager
     import os
-    # 获取当前模块路径
-    module_path = os.path.dirname(os.path.abspath(__file__))
-    # 调用LangManager加载模块语言文件
-    LangManager.load_module_language_file(module_path)
-    return True
+    import shutil
+    import requests
+    from config.config_manager import ConfigManager
+    from lang_manager import LangManager
+
+    try:
+        # 获取当前模块路径
+        module_path = os.path.dirname(os.path.abspath(__file__))
+        print(f"正在补全测试模块，模块路径: {module_path}")
+
+        # 硬编码完整的下载链接
+        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/lib/ocr_modules/test_module/ocr_test_module.py'
+
+        # 下载ocr_test_module.py文件
+        module_file_path = os.path.join(module_path, 'ocr_test_module.py')
+        # 只有当文件不存在或大小为0时才下载
+        if not os.path.exists(module_file_path) or os.path.getsize(module_file_path) == 0:
+            print(f"正在下载ocr_test_module.py文件从: {download_url}")
+            response = requests.get(download_url, timeout=10)
+            if response.status_code != 200:
+                print(f"下载ocr_test_module.py失败，状态码: {response.status_code}")
+                raise Exception(f"无法下载测试模块文件: {download_url}")
+            
+            with open(module_file_path, 'wb') as f:
+                f.write(response.content)
+            print(f"成功下载ocr_test_module.py到: {module_file_path}")
+        else:
+            print(f"ocr_test_module.py文件已存在且不为空，跳过下载")
+
+        # 确保lang目录存在
+        lang_dir = os.path.join(module_path, 'lang')
+        if not os.path.exists(lang_dir):
+            os.makedirs(lang_dir, exist_ok=True)
+            print(f'创建语言目录: {lang_dir}')
+
+        # 生成语言文件
+        # 测试模块只有test_mode_desc这一个键
+        lang_data = {
+            'test_mode_desc': '测试模式: 启用后将使用测试模块进行OCR识别，适用于开发和调试'
+        }
+
+        # 保存中文语言文件
+        zh_cn_path = os.path.join(lang_dir, 'zh-cn.json')
+        if not os.path.exists(zh_cn_path) or os.path.getsize(zh_cn_path) == 0:
+            with open(zh_cn_path, 'w', encoding='utf-8') as f:
+                json.dump(lang_data, f, ensure_ascii=False, indent=2)
+            print(f"已创建中文语言文件: {zh_cn_path}")
+        else:
+            print(f"中文语言文件已存在且不为空，跳过创建")
+
+        # 加载模块语言文件
+        LangManager.load_module_language_file(module_path)
+        print("测试模块补全完成")
+        return True
+    except Exception as e:
+        print(f"补全测试模块失败: {str(e)}")
+        return False
 
 
 def get_module_class():
