@@ -8,7 +8,7 @@ from pathlib import Path
 # 获取必要路径
 process_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-project_download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/'
+project_download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/0.1.1/'
 
 # 创建lib目录（如果不存在）
 lib_dir = os.path.join(parent_dir, 'lib')

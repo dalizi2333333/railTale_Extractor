@@ -64,7 +64,7 @@ def complete_module():
         print(f"正在补全测试模块，模块路径: {module_path}")
 
         # 硬编码完整的下载链接
-        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/lib/ocr_modules/test_module/ocr_test_module.py'
+        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/0.1.1/lib/ocr_modules/test_module/ocr_test_module.py'
 
         # 下载ocr_test_module.py文件
         module_file_path = os.path.join(module_path, 'ocr_test_module.py')

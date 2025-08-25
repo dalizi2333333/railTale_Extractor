@@ -256,7 +256,7 @@ def complete_module():
         module_dir, _ = ConfigManager.get_ocr_module_dir('baidu')
 
         # 下载基础URL
-        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/lib/ocr_modules/baidu'
+        download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/0.1.1/lib/ocr_modules/baidu'
 
         # 确保lang目录存在
         lang_dir = os.path.join(module_dir, 'lang')

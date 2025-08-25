@@ -108,7 +108,7 @@ def _get_paths(paths=None):
     # 设置project_download_url默认值
     project_download_url = paths.get('project_download_url')
     if project_download_url is None:
-        project_download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/main/'
+        project_download_url = 'https://raw.githubusercontent.com/dalizi2333333/railTale_Extractor/0.1.1/'
 
     # 设置process_dir默认值: parent_dir下的to_be_process目录
     process_dir = paths.get('process_dir')
