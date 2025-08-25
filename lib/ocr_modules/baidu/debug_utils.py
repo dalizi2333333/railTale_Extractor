@@ -48,20 +48,22 @@ class BaiduOCRDebugUtils:
         
         # 识别模式
         recognition_mode = LangManager.get_module_lang_data()['high_precision_mode'] if use_custom_font else LangManager.get_module_lang_data()['general_mode']
-        debug_entry += f"{LangManager.get_module_lang_data()['recognition_mode']}: {recognition_mode}\n"
-        
+        # 识别模式
+        recognition_mode = LangManager.get_module_lang_data()['high_precision_mode'] if use_custom_font else LangManager.get_module_lang_data()['general_mode']
+        debug_entry += LangManager.get_module_lang_data()['recognition_mode'].format(recognition_mode) + '\n'
+
         if debug_info:
             # 识别类型
             language_type = debug_info.get('options', {}).get('language_type', LangManager.get_module_lang_data()['unknown'])
-            debug_entry += f"{LangManager.get_module_lang_data()['recognition_type']}: {language_type}\n"
-            
+            debug_entry += LangManager.get_module_lang_data()['recognition_type'].format(language_type) + '\n'
+
             # 识别文本
-            debug_entry += f"{LangManager.get_module_lang_data()['recognized_text']}: {text}\n"
-            
+            debug_entry += LangManager.get_module_lang_data()['recognized_text'].format(text) + '\n'
+
             # 添加额外的模块特定调试信息
             if 'result' in debug_info:
                 api_status = LangManager.get_module_lang_data()['success'] if 'words_result' in debug_info['result'] else LangManager.get_module_lang_data()['failure']
-                debug_entry += f"{LangManager.get_module_lang_data()['api_status']}: {api_status}\n"
+                debug_entry += LangManager.get_module_lang_data()['api_status'].format(api_status) + '\n'
                 if 'error_msg' in debug_info['result']:
                     debug_entry += f"{LangManager.get_module_lang_data()['error_message']}: {debug_info['result']['error_msg']}\n"  
             
