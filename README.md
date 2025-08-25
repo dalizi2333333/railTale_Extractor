@@ -29,6 +29,7 @@
 3. 运行脚本`process_images.py`，补全库里最基本的文件，再次启动，补全完整的lib目录，然后在`脚本父级所在目录/lib/ocr_modules/你选择的OCR模块/config.txt`内填入你的OCR API密钥
 4. 再次运行脚本`process_images.py`，即可开始识别截图
 5. 提取结果将保存到以当前目录名称命名，目录旁的文本文件中（例如，若在`.../example`目录运行，则保存为`.../example.txt`）
+6. 如果想使用其他模块（如test_module），需要修改配置文件中的OCR_MODULE配置项，配置文件所在位置为`脚本所在目录`
 
 ## 多语言支持
 本项目支持多语言显示，所有提示文本均从语言文件中加载，方便进行国际化适配。
@@ -175,7 +176,8 @@
     │   ├── ocr_module_interface.py # OCR模块接口
     │   └── ocr_module_bootstraper.py # OCR模块引导器
     ├── ocr_modules/      # OCR模块目录
-    │   └── baidu/        # 百度OCR模块目录（详细结构见模块内部定义）
+    │   ├── baidu/        # 百度OCR模块目录（详细结构见模块内部定义）
+    │   └── test_module/  # 调试OCR模块目录（详细结构见模块内部定义）
     ├── supported_fonts.json # 支持的字体列表
     ├── text_extracting/  # 文本提取模块
     │   ├── __init__.py   # 文本提取包初始化
@@ -206,7 +208,7 @@
 - `OUTPUT_OCR_DEBUG`：是否输出OCR调试信息到独立文件（true/false）
 - `START_MARKERS`：开始标记，当检测到这些文字块时开始记录文本（多个标记用逗号分隔）
 - `STOP_MARKERS`：结束标记，当检测到这些文字块时停止记录文本（多个标记用逗号分隔）
-- `OCR_MODULE`：OCR API选择（默认baidu）
+- `OCR_MODULE`：OCR API选择（默认baidu，可选test_module）
 - `MAX_VERTICAL_IMAGES`：纵向拼接识别的最大图片数量（默认4）
 - `OCR_LANGUAGE`：OCR识别语言（默认zh-cn）
 
