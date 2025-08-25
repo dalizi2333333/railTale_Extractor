@@ -70,7 +70,7 @@ class TextProcessor:
 
             return True
         except Exception as e:
-            print(LangManager.get_lang_data()['init_fail'].format(str(e)))
+            print(LangManager.get_lang('init_fail').format(str(e)))
             return False
 
     def find_image_files(self):
@@ -126,7 +126,7 @@ class TextProcessor:
             
             return stitch_file_path
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['image_stitch_error'].format(str(e))
+            error_msg = LangManager.get_lang('image_stitch_error').format(str(e))
             print(error_msg)
             return None
 
@@ -148,7 +148,7 @@ class TextProcessor:
             image_files = self.find_image_files()
             
             if not image_files:
-                warning_msg = LangManager.get_lang_data()['no_image_files_warning'].format(self.process_dir)
+                warning_msg = LangManager.get_lang('no_image_files_warning').format(self.process_dir)
                 print(warning_msg)
                 self.text_extractor.output.append(f'{warning_msg}\n')
                 return False
@@ -191,7 +191,7 @@ class TextProcessor:
                                     'text': result['text']
                                 }
                         except Exception as e:
-                            error_msg = LangManager.get_lang_data()['image_process_error'].format(stitch_file_path, str(e))
+                            error_msg = LangManager.get_lang('image_process_error').format(stitch_file_path, str(e))
                             print(error_msg)
                             self.text_extractor.output.append(f'{error_msg}\n')
                             self.text_extractor.error_count += 1
@@ -205,7 +205,7 @@ class TextProcessor:
             self.cleanup()
             return self.processed_results
         except Exception as e:
-            print(LangManager.get_lang_data()['script_execution_error'].format(str(e)))
+            print(LangManager.get_lang('script_execution_error').format(str(e)))
             return {}
 
     def write_results(self):
@@ -227,51 +227,51 @@ class TextProcessor:
 
         with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write(output_content)
-            f.write(f"\n{LangManager.get_lang_data()['process_stats'].format(success_count, error_count)}\n")
+            f.write(f"\n{LangManager.get_lang('process_stats').format(success_count, error_count)}\n")
 
             # 写入疑似破折号信息
             if len(suspected_dash_files) > 0:
-                f.write(LangManager.get_lang_data()['suspected_dash_summary'].format(len(suspected_dash_files)))
+                f.write(LangManager.get_lang('suspected_dash_summary').format(len(suspected_dash_files)))
                 for file in suspected_dash_files:
                     f.write(f'      - {file}\n')
-                f.write(LangManager.get_lang_data()['manual_screening_prompt'] + '\n')
+                f.write(LangManager.get_lang('manual_screening_prompt') + '\n')
 
             # 写入字体提示信息
             if use_custom_font:
                 # 检测使用的字体类型并提示
-                f.write('\n' + LangManager.get_lang_data()['single_font_detected'].format(font_path) + '\n')
+                f.write('\n' + LangManager.get_lang('single_font_detected').format(font_path) + '\n')
             else:
                 # 区分没有字体文件和存在多个字体文件的情况
                 if len(found_fonts) == 0:
                     # 使用语言文件中的提示
-                    f.write('\n' + LangManager.get_lang_data()['font_not_detected'] + '\n')
+                    f.write('\n' + LangManager.get_lang('font_not_detected') + '\n')
                 elif len(found_fonts) > 1:
                     # 使用语言文件中的警告
-                    f.write('\n' + LangManager.get_lang_data()['multiple_fonts_warning'].format(', '.join([font[0]['file_name'] for font in found_fonts])) + '\n')
+                    f.write('\n' + LangManager.get_lang('multiple_fonts_warning').format(', '.join([font[0]['file_name'] for font in found_fonts])) + '\n')
 
-        print(LangManager.get_lang_data()['results_saved'].format(self.output_file))
-        print(LangManager.get_lang_data()['process_stats'].format(success_count, error_count))
+        print(LangManager.get_lang('results_saved').format(self.output_file))
+        print(LangManager.get_lang('process_stats').format(success_count, error_count))
 
         # 检查是否有疑似破折号情况
         suspected_dash_count = len(suspected_dash_files)
         if suspected_dash_count > 0:
-            print(LangManager.get_lang_data()['suspected_dash_summary'].format(suspected_dash_count))
+            print(LangManager.get_lang('suspected_dash_summary').format(suspected_dash_count))
             for file in suspected_dash_files:
                 print(f'      - {file}')
-            print(LangManager.get_lang_data()['manual_screening_prompt'])
+            print(LangManager.get_lang('manual_screening_prompt'))
 
         # 输出字体提示信息
         if use_custom_font:
             # 检测使用的字体类型并提示
-            print('\n' + LangManager.get_lang_data()['single_font_detected'].format(font_path))
+            print('\n' + LangManager.get_lang('single_font_detected').format(font_path))
         else:
             # 区分没有字体文件和存在多个字体文件的情况
             if len(found_fonts) == 0:
                 # 使用语言文件中的提示
-                print('\n' + LangManager.get_lang_data()['font_not_detected'])
+                print('\n' + LangManager.get_lang('font_not_detected'))
             elif len(found_fonts) > 1:
                 # 使用语言文件中的警告
-                print('\n' + LangManager.get_lang_data()['multiple_fonts_warning'].format(', '.join([font[0]['file_name'] for font in found_fonts])))
+                print('\n' + LangManager.get_lang('multiple_fonts_warning').format(', '.join([font[0]['file_name'] for font in found_fonts])))
 
     def write_debug_info(self, image_files):
         """写入OCR调试信息到文件
@@ -291,7 +291,7 @@ class TextProcessor:
         font_path = ConfigManager.get('CUSTOM_FONT_PATH', None)
 
         with open(self.debug_output_file, 'w', encoding='utf-8') as f:
-            f.write(LangManager.get_lang_data()['debug_info_header'].format(
+            f.write(LangManager.get_lang('debug_info_header').format(
                 time.strftime("%Y-%m-%d %H:%M:%S"),
                 len(image_files),
                 success_count,
@@ -299,10 +299,10 @@ class TextProcessor:
                 "是" if use_custom_font else "否"
             ))
             if use_custom_font and font_path:
-                f.write(LangManager.get_lang_data()['debug_font_path'].format(font_path))
+                f.write(LangManager.get_lang('debug_font_path').format(font_path))
             f.write('\n')
             f.write(''.join(ocr_debug_info))
-        print(LangManager.get_lang_data()['ocr_debug_info_saved'].format(self.debug_output_file))
+        print(LangManager.get_lang('ocr_debug_info_saved').format(self.debug_output_file))
 
     def cleanup(self):
         """清理临时文件和目录
@@ -321,9 +321,9 @@ class TextProcessor:
                         os.rmdir(dir_path)
                 # 删除临时目录
                 os.rmdir(self.temp_dir)
-                print(LangManager.get_lang_data()['temp_files_cleaned'].format(self.temp_dir))
+                print(LangManager.get_lang('temp_files_cleaned').format(self.temp_dir))
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['cleanup_error'].format(str(e))
+            error_msg = LangManager.get_lang('cleanup_error').format(str(e))
             print(error_msg)
     def run(self):
         """运行整个处理流程
@@ -343,7 +343,7 @@ class TextProcessor:
             # 处理图片
             return self.process_images()
         except Exception as e:
-            print(LangManager.get_lang_data()['script_execution_error'].format(str(e)))
+            print(LangManager.get_lang('script_execution_error').format(str(e)))
             return {}
 
 __all__ = ['TextProcessor']

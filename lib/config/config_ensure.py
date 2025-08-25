@@ -28,7 +28,7 @@ def ensure_config(module=None):
     # 使用DefaultConfig获取配置定义（不需要本地化版本）
     config_definitions = DefaultConfig.get_config_definitions(module)
     if not config_definitions:
-        raise ValueError(LangManager.get_lang_data()['module_config_definition_not_found'].format(module))
+        raise ValueError(LangManager.get_lang('module_config_definition_not_found').format(module))
 
     if module is not None:
         # 使用get_ocr_module_dir获取模块路径

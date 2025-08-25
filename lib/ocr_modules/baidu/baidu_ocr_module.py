@@ -137,11 +137,11 @@ class BaiduOCRModule(OCRModuleInterface):
                 return text
             else:
                 error_msg = result.get('error_msg', '识别失败')
-                print(LangManager.get_module_lang_data()['recognize_fail'].format(error_msg))
+                print(LangManager.get_module_lang('recognize_fail').format(error_msg))
                 self.last_recognized_text = None
                 return None
         except Exception as e:
-            print(LangManager.get_module_lang_data()['recognize_error'].format(str(e)))
+            print(LangManager.get_module_lang('recognize_error').format(str(e)))
             self.last_recognized_text = None
             return None
 

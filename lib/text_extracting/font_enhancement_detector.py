@@ -45,7 +45,7 @@ class FontEnhancementDetector:
         如果加载失败，会初始化空的映射表并打印错误信息。
         """
         try:
-            self.ocr_language_mapping = LangManager.get_lang_data()['language_mapping']
+            self.ocr_language_mapping = LangManager.get_lang('language_mapping')
             try:
                 # 使用项目根目录下的supported_fonts.json文件
                 parent_dir = ConfigManager.get_parent_dir()
@@ -55,12 +55,12 @@ class FontEnhancementDetector:
                     self.font_to_language = font_data.get('font_to_language', {})
                     self.language_to_fonts = font_data.get('language_to_font', {})
             except Exception as e:
-                error_msg = LangManager.get_lang_data()['font_file_load_error']
+                error_msg = LangManager.get_lang('font_file_load_error')
                 print(error_msg.format(str(e)))
                 self.font_to_language = {}
                 self.language_to_fonts = {}
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['cache_initialization_error']
+            error_msg = LangManager.get_lang('cache_initialization_error')
             print(error_msg.format(str(e)))
             self.ocr_language_mapping = {}
             self.font_to_language = {}
@@ -88,9 +88,9 @@ class FontEnhancementDetector:
         # 如果ocr_language为default，则使用LangManager获取的语言
         if original_ocr_language == 'default':
             try:
-                ocr_language = LangManager.get_lang_data()['language_mapping']
+                ocr_language = LangManager.get_lang('language_mapping')
             except Exception as e:
-                error_msg = LangManager.get_lang_data()['ocr_language_fetch_error']
+                error_msg = LangManager.get_lang('ocr_language_fetch_error')
                 print(error_msg.format(str(e)))
                 ocr_language = self.DEFAULT_OCR_LANGUAGE
         else:
@@ -103,10 +103,10 @@ class FontEnhancementDetector:
                 font_file, font_path = matched_font
                 use_custom_font = True
                 found_fonts.append(({'file_name': font_file, 'ocr_language': self.font_to_language[font_file]}, font_path))
-                print(LangManager.get_lang_data()['single_font_detected'].format(font_path))
+                print(LangManager.get_lang('single_font_detected').format(font_path))
             # 非default模式下，如果找不到匹配字体，则不启用字体增强
             else:
-                print(LangManager.get_lang_data()['no_font_detected_simple'])
+                print(LangManager.get_lang('no_font_detected_simple'))
         else:
             # 2. 对于default模式，先尝试查找当前语言对应的字体
             matched_font = self._find_font_by_language(ocr_language)
@@ -114,7 +114,7 @@ class FontEnhancementDetector:
                 font_file, font_path = matched_font
                 use_custom_font = True
                 found_fonts.append(({'file_name': font_file, 'ocr_language': self.font_to_language[font_file]}, font_path))
-                print(LangManager.get_lang_data()['single_font_detected'].format(font_path))
+                print(LangManager.get_lang('single_font_detected').format(font_path))
             else:
                 # 3. 如果找不到对应语言的字体，查找所有支持的字体
                 found_fonts = self._find_fonts_in_directory()
@@ -125,13 +125,13 @@ class FontEnhancementDetector:
                     font_path = current_font_path
                     # 使用找到的字体对应的语言
                     ocr_language = font_info['ocr_language']
-                    print(LangManager.get_lang_data()['single_font_detected'].format(font_path))
+                    print(LangManager.get_lang('single_font_detected').format(font_path))
                 elif len(found_fonts) > 1:
                     # 打印多字体警告信息
-                    print(LangManager.get_lang_data()['multiple_fonts_warning'])
+                    print(LangManager.get_lang('multiple_fonts_warning'))
                 else:
                     # 打印无字体检测提示
-                    print(LangManager.get_lang_data()['no_font_detected_simple'])
+                    print(LangManager.get_lang('no_font_detected_simple'))
         # 将结果保存到配置系统
         ConfigManager.set('USE_CUSTOM_FONT', use_custom_font)
         ConfigManager.set('CUSTOM_FONT_PATH', font_path)

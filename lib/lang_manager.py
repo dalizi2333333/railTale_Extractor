@@ -61,12 +61,39 @@ class LangManager:
 
     @classmethod
     def get_module_lang_data(cls):
-        """获取模块语言数据
+        """
+        获取模块语言数据
 
         Returns:
             dict: 模块语言数据
         """
         return cls()._module_lang_data
+
+    @classmethod
+    def get_lang(cls, key):
+        """
+        获取基础语言文本，如果键不存在则返回键本身
+
+        Args:
+            key (str): 语言键
+
+        Returns:
+            str: 语言文本或键本身
+        """
+        return cls()._lang_data.get(key, key)
+
+    @classmethod
+    def get_module_lang(cls, key):
+        """
+        获取模块语言文本，如果键不存在则返回键本身
+
+        Args:
+            key (str): 模块语言键
+
+        Returns:
+            str: 模块语言文本或键本身
+        """
+        return cls()._module_lang_data.get(key, key)
 
     @classmethod
     def get_current_language_file(cls):

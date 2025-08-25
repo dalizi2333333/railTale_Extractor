@@ -41,7 +41,7 @@ class OCRModuleBootstraper:
         if is_newly_created or not os.path.exists(bootstrap_path):
             # 尝试下载module_bootstrap.py
             if not self._download_bootstrap(module_name, bootstrap_path):
-                print(LangManager.get_lang_data()['module_bootstrap_missing'].format(module_name))
+                print(LangManager.get_lang('module_bootstrap_missing').format(module_name))
                 return False
 
         # 加载module_bootstrap.py
@@ -66,7 +66,7 @@ class OCRModuleBootstraper:
             # module_bootstrap.test_module()
             for method_name in required_methods:
                 if not hasattr(module_bootstrap, method_name):
-                    print(LangManager.get_lang_data()['module_method_missing'].format(module_name, method_name))
+                    print(LangManager.get_lang('module_method_missing').format(module_name, method_name))
                     return False
 
             # 调用方法
@@ -119,7 +119,7 @@ class OCRModuleBootstraper:
                     Returns:
                         bool: 是否有不可为默认值的配置项
                     """
-                    print(LangManager.get_lang_data()['module_mandatory_config'].format(module_name))
+                    print(LangManager.get_lang('module_mandatory_config').format(module_name))
                     # 有强制配置但配置文件不存在，返回False以在应用层面中断程序
                     return False
                 # 注册模块
@@ -134,11 +134,11 @@ class OCRModuleBootstraper:
                 OCRModule.register_module(module_name, module_class)
                 return True
             else:
-                print(LangManager.get_lang_data()['module_self_completion_fail'].format(module_name))
+                print(LangManager.get_lang('module_self_completion_fail').format(module_name))
                 return False
 
         except Exception as e:
-            print(LangManager.get_lang_data()['module_bootstrap_error'].format(module_name, str(e)))
+            print(LangManager.get_lang('module_bootstrap_error').format(module_name, str(e)))
             return False
 
     def _download_bootstrap(self, module_name, bootstrap_path):
@@ -154,7 +154,7 @@ class OCRModuleBootstraper:
         try:
             download_url = ConfigManager.get_project_download_url()
             if not download_url:
-                print(LangManager.get_lang_data()['download_url_not_set'])
+                print(LangManager.get_lang('download_url_not_set'))
                 return False
 
             # 构建bootstrap.py的下载URL
@@ -163,7 +163,7 @@ class OCRModuleBootstraper:
             # 下载文件
             response = requests.get(bootstrap_url)
             if response.status_code == 404:
-                print(LangManager.get_lang_data()['bootstrap_not_found'].format(module_name, bootstrap_url))
+                print(LangManager.get_lang('bootstrap_not_found').format(module_name, bootstrap_url))
                 return False
 
             response.raise_for_status()
@@ -172,11 +172,11 @@ class OCRModuleBootstraper:
             with open(bootstrap_path, 'w', encoding='utf-8') as f:
                 f.write(response.text)
 
-            print(LangManager.get_lang_data()['bootstrap_downloaded'].format(module_name))
+            print(LangManager.get_lang('bootstrap_downloaded').format(module_name))
             return True
 
         except requests.RequestException as e:
-            print(LangManager.get_lang_data()['bootstrap_download_failed'].format(module_name, str(e)))
+            print(LangManager.get_lang('bootstrap_download_failed').format(module_name, str(e)))
             return False
 
 # 创建全局实例

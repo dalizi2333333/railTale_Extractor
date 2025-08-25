@@ -83,44 +83,44 @@ class ConfigLoader:
                             # 处理不可取默认值类型
                             if prop.get('cannot_use_default', False) and value == prop['default']:
                                 config_valid = 0
-                                print(LangManager.get_lang_data()['config_cannot_use_default'].format(key))
+                                print(LangManager.get_lang('config_cannot_use_default').format(key))
                                 continue
 
                             # 类型和范围验证
                             if prop['type'] == 'integer':
                                 if not value.isdigit():
                                     is_valid = False
-                                    error_msg = LangManager.get_lang_data()['must_be_integer'].format(value)
+                                    error_msg = LangManager.get_lang('must_be_integer').format(value)
                                 else:
                                     value_int = int(value)
                                     if 'min_value' in prop and value_int < prop['min_value']:
                                         is_valid = False
-                                        error_msg = LangManager.get_lang_data()['must_be_greater_or_equal'].format(prop['min_value'], value)
+                                        error_msg = LangManager.get_lang('must_be_greater_or_equal').format(prop['min_value'], value)
                                     elif 'max_value' in prop and value_int > prop['max_value']:
                                         is_valid = False
-                                        error_msg = LangManager.get_lang_data()['must_be_less_or_equal'].format(prop['max_value'], value)
+                                        error_msg = LangManager.get_lang('must_be_less_or_equal').format(prop['max_value'], value)
                             elif prop['type'] == 'float':
                                 try:
                                     value_float = float(value)
                                     if 'min_value' in prop and value_float < prop['min_value']:
                                         is_valid = False
-                                        error_msg = LangManager.get_lang_data()['must_be_greater_or_equal'].format(prop['min_value'], value)
+                                        error_msg = LangManager.get_lang('must_be_greater_or_equal').format(prop['min_value'], value)
                                     elif 'max_value' in prop and value_float > prop['max_value']:
                                         is_valid = False
-                                        error_msg = LangManager.get_lang_data()['must_be_less_or_equal'].format(prop['max_value'], value)
+                                        error_msg = LangManager.get_lang('must_be_less_or_equal').format(prop['max_value'], value)
                                 except ValueError:
                                     is_valid = False
-                                    error_msg = LangManager.get_lang_data()['must_be_float'].format(value)
+                                    error_msg = LangManager.get_lang('must_be_float').format(value)
                             elif prop['type'] == 'boolean':
                                 if value.lower() not in ['true', 'false']:
                                     is_valid = False
-                                    error_msg = LangManager.get_lang_data()['must_be_boolean'].format(value)
+                                    error_msg = LangManager.get_lang('must_be_boolean').format(value)
                             elif 'options' in prop and value not in prop['options']:
                                 is_valid = False
-                                error_msg = LangManager.get_lang_data()['must_be_one_of_options'].format(', '.join(prop['options']), value)
+                                error_msg = LangManager.get_lang('must_be_one_of_options').format(', '.join(prop['options']), value)
                             elif prop['type'] == 'string' and prop.get('non_empty', False) and not value:
                                 is_valid = False
-                                error_msg = LangManager.get_lang_data()['cannot_be_empty']
+                                error_msg = LangManager.get_lang('cannot_be_empty')
 
                             # 处理验证结果
                             if is_valid:
@@ -134,27 +134,27 @@ class ConfigLoader:
                             else:
                                 # 使用默认值
                                 config_valid = 1
-                                print(LangManager.get_lang_data()['config_validation_error'].format(key, error_msg))
-                                print(LangManager.get_lang_data()['using_default_value'].format(key, prop['default']))
+                                print(LangManager.get_lang('config_validation_error').format(key, error_msg))
+                                print(LangManager.get_lang('using_default_value').format(key, prop['default']))
                         else:
-                            print(LangManager.get_lang_data()['unknown_config_key'].format(key))
+                            print(LangManager.get_lang('unknown_config_key').format(key))
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['config_read_error'].format(str(e))
+            error_msg = LangManager.get_lang('config_read_error').format(str(e))
             print(error_msg)
             raise Exception(error_msg)
 
         # 检查必需的配置项
         for key, prop in config_definitions.items():
             if prop.get('required', False) and key not in config:
-                print(LangManager.get_lang_data()['missing_required_config'].format(key))
+                print(LangManager.get_lang('missing_required_config').format(key))
                 config[key] = prop['default']
                 ConfigManager.set(key, prop['default'])
-                print(LangManager.get_lang_data()['using_default_value'].format(key, prop['default']))
+                print(LangManager.get_lang('using_default_value').format(key, prop['default']))
                 config_valid = 1
 
         # 检查配置是否完全不可用
         if config_valid == 0:
-            error_msg = LangManager.get_lang_data()['config_cannot_use_default'].format('CONFIG_VALID')
+            error_msg = LangManager.get_lang('config_cannot_use_default').format('CONFIG_VALID')
             print(error_msg)
             raise Exception(error_msg)
 
@@ -162,5 +162,5 @@ class ConfigLoader:
         ConfigManager.set('CONFIG_VALID', config_valid)
         config['CONFIG_VALID'] = config_valid
 
-        print(LangManager.get_lang_data()['config_load_success'].format(config_path))
+        print(LangManager.get_lang('config_load_success').format(config_path))
         return config

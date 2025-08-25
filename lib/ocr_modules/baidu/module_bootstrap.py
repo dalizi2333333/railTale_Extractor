@@ -97,7 +97,7 @@ def _download_file_from_github(github_path, local_path, download_url, default_la
 
             # 尝试使用语言数据，如果失败则使用默认文本
             try:
-                print(LangManager.get_module_lang_data()['download_success'].format(local_path))
+                print(LangManager.get_module_lang('download_success').format(local_path))
             except (KeyError, Exception):
                 if default_lang_data and 'download_success' in default_lang_data:
                     print(default_lang_data['download_success'].format(local_path))
@@ -109,8 +109,8 @@ def _download_file_from_github(github_path, local_path, download_url, default_la
             if attempt < max_retries - 1:
                 # 尝试使用语言数据，如果失败则使用默认文本
                 try:
-                    print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
-                    print(LangManager.get_module_lang_data()['retry_attempt'].format(attempt+1))
+                    print(LangManager.get_module_lang('download_fail').format(url, error_msg))
+                    print(LangManager.get_module_lang('retry_attempt').format(attempt+1))
                 except (KeyError, Exception):
                     if default_lang_data:
                         if 'download_fail' in default_lang_data:
@@ -123,8 +123,8 @@ def _download_file_from_github(github_path, local_path, download_url, default_la
             else:
                 # 尝试使用语言数据，如果失败则使用默认文本
                 try:
-                    print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
-                    print(LangManager.get_module_lang_data()['max_retries_reached'].format(max_retries))
+                    print(LangManager.get_module_lang('download_fail').format(url, error_msg))
+                    print(LangManager.get_module_lang('max_retries_reached').format(max_retries))
                 except (KeyError, Exception):
                     if default_lang_data:
                         if 'download_fail' in default_lang_data:
@@ -167,7 +167,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
         if not os.path.exists(base_path):
             # 为dir_not_found添加异常处理
             try:
-                print(LangManager.get_module_lang_data()['dir_not_found'].format(base_path))
+                print(LangManager.get_module_lang('dir_not_found').format(base_path))
             except (KeyError, Exception):
                 if default_lang_data and 'dir_not_found' in default_lang_data:
                     print(default_lang_data['dir_not_found'].format(base_path))
@@ -176,7 +176,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
             os.makedirs(base_path, exist_ok=True)
             # 为dir_created添加异常处理
             try:
-                print(LangManager.get_module_lang_data()['dir_created'].format(base_path))
+                print(LangManager.get_module_lang('dir_created').format(base_path))
             except (KeyError, Exception):
                 if default_lang_data and 'dir_created' in default_lang_data:
                     print(default_lang_data['dir_created'].format(base_path))
@@ -187,7 +187,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
         if 'files' in dir_config:
             # 为dir_checking添加异常处理
             try:
-                print(LangManager.get_module_lang_data()['dir_checking'].format(base_path))
+                print(LangManager.get_module_lang('dir_checking').format(base_path))
             except (KeyError, Exception):
                 if default_lang_data and 'dir_checking' in default_lang_data:
                     print(default_lang_data['dir_checking'].format(base_path))
@@ -199,7 +199,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
                 if os.path.exists(file_path):
                     # 为file_found添加异常处理
                     try:
-                        print(LangManager.get_module_lang_data()['file_found'].format(file_path))
+                        print(LangManager.get_module_lang('file_found').format(file_path))
                     except (KeyError, Exception):
                         if default_lang_data and 'file_found' in default_lang_data:
                             print(default_lang_data['file_found'].format(file_path))
@@ -208,7 +208,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
                 else:
                     # 为file_not_found添加异常处理
                     try:
-                        print(LangManager.get_module_lang_data()['file_not_found'].format(file_path))
+                        print(LangManager.get_module_lang('file_not_found').format(file_path))
                     except (KeyError, Exception):
                         if default_lang_data and 'file_not_found' in default_lang_data:
                             print(default_lang_data['file_not_found'].format(file_path))
@@ -221,7 +221,7 @@ def _check_module_files(module_dir, download_url, default_lang_data=None):
                         critical_files_downloaded = False
                         # 为critical_file_download_fail添加异常处理
                         try:
-                            print(LangManager.get_module_lang_data()['critical_file_download_fail'].format(github_path))
+                            print(LangManager.get_module_lang('critical_file_download_fail').format(github_path))
                         except (KeyError, Exception):
                             if default_lang_data and 'critical_file_download_fail' in default_lang_data:
                                 print(default_lang_data['critical_file_download_fail'].format(github_path))
@@ -299,7 +299,7 @@ def complete_module():
         # 检查并下载模块文件
         # 为check_start添加异常处理
         try:
-            print(LangManager.get_module_lang_data()['check_start'])
+            print(LangManager.get_module_lang('check_start'))
         except (KeyError, Exception):
             if default_lang_data and 'check_start' in default_lang_data:
                 print(default_lang_data['check_start'])
@@ -309,7 +309,7 @@ def complete_module():
         if not _check_module_files(module_dir, download_url, default_lang_data):
             # 为exit_due_to_download_fail添加异常处理
             try:
-                print(LangManager.get_module_lang_data()['exit_due_to_download_fail'])
+                print(LangManager.get_module_lang('exit_due_to_download_fail'))
             except (KeyError, Exception):
                 if default_lang_data and 'exit_due_to_download_fail' in default_lang_data:
                     print(default_lang_data['exit_due_to_download_fail'])
@@ -319,7 +319,7 @@ def complete_module():
 
         # 为check_complete添加异常处理
         try:
-            print(LangManager.get_module_lang_data()['check_complete'])
+            print(LangManager.get_module_lang('check_complete'))
         except (KeyError, Exception):
             if default_lang_data and 'check_complete' in default_lang_data:
                 print(default_lang_data['check_complete'])

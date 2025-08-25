@@ -44,46 +44,46 @@ class BaiduOCRDebugUtils:
             str: 格式化的调试信息字符串，包含文件名、识别模式、识别文本和详细调试信息
         """
         # 使用语言文件中的标题格式
-        debug_entry = LangManager.get_module_lang_data()['ocr_debug_header'].format(file_name) + '\n'
+        debug_entry = LangManager.get_module_lang('ocr_debug_header').format(file_name) + '\n'
         
         # 识别模式
-        recognition_mode = LangManager.get_module_lang_data()['high_precision_mode'] if use_custom_font else LangManager.get_module_lang_data()['general_mode']
+        recognition_mode = LangManager.get_module_lang('high_precision_mode') if use_custom_font else LangManager.get_module_lang('general_mode')
         # 识别模式
-        recognition_mode = LangManager.get_module_lang_data()['high_precision_mode'] if use_custom_font else LangManager.get_module_lang_data()['general_mode']
-        debug_entry += LangManager.get_module_lang_data()['recognition_mode'].format(recognition_mode) + '\n'
+        recognition_mode = LangManager.get_module_lang('high_precision_mode') if use_custom_font else LangManager.get_module_lang('general_mode')
+        debug_entry += LangManager.get_module_lang('recognition_mode').format(recognition_mode) + '\n'
 
         if debug_info:
             # 识别类型
-            language_type = debug_info.get('options', {}).get('language_type', LangManager.get_module_lang_data()['unknown'])
-            debug_entry += LangManager.get_module_lang_data()['recognition_type'].format(language_type) + '\n'
+            language_type = debug_info.get('options', {}).get('language_type', LangManager.get_module_lang('unknown'))
+            debug_entry += LangManager.get_module_lang('recognition_type').format(language_type) + '\n'
 
             # 识别文本
-            debug_entry += LangManager.get_module_lang_data()['recognized_text'].format(text) + '\n'
+            debug_entry += LangManager.get_module_lang('recognized_text').format(text) + '\n'
 
             # 添加额外的模块特定调试信息
             if 'result' in debug_info:
-                api_status = LangManager.get_module_lang_data()['success'] if 'words_result' in debug_info['result'] else LangManager.get_module_lang_data()['failure']
-                debug_entry += LangManager.get_module_lang_data()['api_status'].format(api_status) + '\n'
+                api_status = LangManager.get_module_lang('success') if 'words_result' in debug_info['result'] else LangManager.get_module_lang('failure')
+                debug_entry += LangManager.get_module_lang('api_status').format(api_status) + '\n'
                 if 'error_msg' in debug_info['result']:
-                    debug_entry += f"{LangManager.get_module_lang_data()['error_message']}: {debug_info['result']['error_msg']}\n"  
+                    debug_entry += f"{LangManager.get_module_lang('error_message')}: {debug_info['result']['error_msg']}\n"  
             
             # 添加原始识别结果
             if 'raw_result_str' in debug_info:
-                debug_entry += f"{LangManager.get_module_lang_data()['raw_recognition_result']}: {debug_info['raw_result_str']}\n"
+                debug_entry += f"{LangManager.get_module_lang('raw_recognition_result')}: {debug_info['raw_result_str']}\n"
             
             # 添加字块详情
             if 'blocks' in debug_info:
-                debug_entry += f"{LangManager.get_module_lang_data()['block_details']}:\n"
+                debug_entry += f"{LangManager.get_module_lang('block_details')}:\n"
                 for block in debug_info['blocks']:
-                    debug_entry += f"  {LangManager.get_module_lang_data()['block']} {block['index']}: {LangManager.get_module_lang_data()['content']}=\"{block['content']}\""
+                    debug_entry += f"  {LangManager.get_module_lang('block')} {block['index']}: {LangManager.get_module_lang('content')}=\"{block['content']}\""
                     if block['confidence'] is not None:
-                        debug_entry += f", {LangManager.get_module_lang_data()['confidence']}={block['confidence']}\n"
+                        debug_entry += f", {LangManager.get_module_lang('confidence')}={block['confidence']}\n"
                     else:
                         debug_entry += "\n"
                     # 添加默认处理说明
-                    debug_entry += f"  {LangManager.get_module_lang_data()['processing']}: {LangManager.get_module_lang_data()['keep']}\n"
+                    debug_entry += f"  {LangManager.get_module_lang('processing')}: {LangManager.get_module_lang('keep')}\n"
         else:
-            debug_entry += f"{LangManager.get_module_lang_data()['recognition_type']}: {LangManager.get_module_lang_data()['unknown']}\n"
-            debug_entry += f"{LangManager.get_module_lang_data()['recognized_text']}: {text}\n"
+            debug_entry += f"{LangManager.get_module_lang('recognition_type')}: {LangManager.get_module_lang('unknown')}\n"
+            debug_entry += f"{LangManager.get_module_lang('recognized_text')}: {text}\n"
         
         return debug_entry

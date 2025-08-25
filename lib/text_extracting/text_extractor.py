@@ -53,7 +53,7 @@ class TextExtractor:
         5. 更新处理统计信息
         """
         if not text:
-            error_msg = LangManager.get_lang_data()['ocr_recognition_failed']
+            error_msg = LangManager.get_lang('ocr_recognition_failed')
             print(error_msg)
             self.output.append(f'{error_msg}\n')
             self.error_count += 1
@@ -79,14 +79,14 @@ class TextExtractor:
 
         for line in lines:
             # 打印行内容
-            print(LangManager.get_lang_data()['image_line_content'].format(file_name, line))
+            print(LangManager.get_lang('image_line_content').format(file_name, line))
 
             # 检查是否到达新的开始记录点
             if any(marker in line for marker in self.start_markers) and not start_recording:
                 start_recording = True
                 # 找出实际匹配的标记
                 matched_marker = next(marker for marker in self.start_markers if marker in line)
-                print(LangManager.get_lang_data()['start_recording_text'].format(matched_marker, file_name))
+                print(LangManager.get_lang('start_recording_text').format(matched_marker, file_name))
                 current_paragraph = []  # 重置当前段落
                 continue  # 不记录开始标记本身
 
@@ -94,7 +94,7 @@ class TextExtractor:
             if start_recording:
                 if line.strip() in self.stop_markers:
                     start_recording = False  # 重置以便下一次检测
-                    print(LangManager.get_lang_data()['stop_recording_text'].format(line, file_name))
+                    print(LangManager.get_lang('stop_recording_text').format(line, file_name))
                     # 将当前段落添加到过滤文本中（如果不为空且不重复）
                     paragraph_text = ''.join(current_paragraph)
                     if paragraph_text and paragraph_text not in filtered_text:
@@ -115,12 +115,12 @@ class TextExtractor:
 
         # 文本后处理：检测疑似破折号的情况
         if not use_custom_font and '一一' in processed_text:
-            print(LangManager.get_lang_data()['suspected_dash_detected'].format(file_name))
+            print(LangManager.get_lang('suspected_dash_detected').format(file_name))
             self.suspected_dash_files.append(file_name)
 
         self.output.append(f'{processed_text}\n')  # 不同图片的内容输出到不同行
         self.success_count += 1
-        print(LangManager.get_lang_data()['process_success'].format(file_name))
+        print(LangManager.get_lang('process_success').format(file_name))
 
         return processed_text
 
@@ -157,7 +157,7 @@ class TextExtractor:
             max_height = ocr_module.get_max_height()
             
             if width > max_width or height > max_height:
-                error_msg = LangManager.get_lang_data()['image_size_exceeded'].format(
+                error_msg = LangManager.get_lang('image_size_exceeded').format(
                     file_path, width, height, max_width, max_height
                 )
                 print(error_msg)
@@ -170,7 +170,7 @@ class TextExtractor:
             
             # 添加延迟以避免QPS限制
             delay = ocr_module.get_api_delay()
-            print(LangManager.get_lang_data()['ocr_module_delay_info'].format(delay))
+            print(LangManager.get_lang('ocr_module_delay_info').format(delay))
             time.sleep(delay)
             
             # 处理识别的文本
@@ -186,10 +186,10 @@ class TextExtractor:
                     'text': processed_text
                 }
             else:
-                error_msg = LangManager.get_lang_data()['text_processing_failed'].format(file_path)
+                error_msg = LangManager.get_lang('text_processing_failed').format(file_path)
                 return {'error': error_msg}
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['ocr_processing_failed'].format(file_path, str(e))
+            error_msg = LangManager.get_lang('ocr_processing_failed').format(file_path, str(e))
             print(error_msg)
             self.output.append(f'{error_msg}\n')
             self.error_count += 1

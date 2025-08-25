@@ -196,13 +196,12 @@ def _check_directory_structure(base_path, dir_config, github_prefix, download_ur
 
     # 检查当前目录中的文件
     if 'files' in dir_config:
-        #print(lang_data['dir_checking'].format(base_path))
+        print(lang_data['dir_checking'].format(base_path))
         for file_name in dir_config['files']:
             file_path = os.path.join(base_path, file_name)
             # 检查文件是否存在
             if os.path.exists(file_path):
-                #print(lang_data['file_found'].format(file_path))
-                pass#暂时提示
+                print(lang_data['file_found'].format(file_path))
             else:
                 print(lang_data['file_not_found'].format(file_path))
                 # 构建GitHub路径
@@ -376,7 +375,7 @@ def bootstrap(paths=None):
     from ocr_core.ocr_module_bootstraper import OCRModuleBootstraper
     module_bootstraper = OCRModuleBootstraper()
     if not module_bootstraper.bootstrap_module():
-        print(LangManager.get_lang_data()['module_bootstrap_fail'].format(ConfigManager.get('OCR_MODULE' , 'baidu')))
+        print(LangManager.get_lang('module_bootstrap_fail').format(ConfigManager.get('OCR_MODULE' , 'baidu')))
         sys.exit(1)
 
     # 7. 处理项目

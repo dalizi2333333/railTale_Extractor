@@ -39,10 +39,10 @@ class ConfigGenerator:
             # 使用get_ocr_module_dir获取模块路径
             module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module)
             config_path = os.path.join(module_dir, 'config.txt')
-            config_type = f"{LangManager.get_lang_data()['config_module_file']} ({module})"
+            config_type = f"{LangManager.get_lang('config_module_file')} ({module})"
         else:
             config_path = os.path.join(process_dir, 'config.txt')
-            config_type = LangManager.get_lang_data()['config_main_file']
+            config_type = LangManager.get_lang('config_main_file')
 
         try:
             # 确保目录存在
@@ -50,10 +50,10 @@ class ConfigGenerator:
 
             with open(config_path, 'w', encoding='utf-8') as f:
                 f.write("# {}".format(
-                    LangManager.get_lang_data()['config_auto_generated'].format(config_type)
+                    LangManager.get_lang('config_auto_generated').format(config_type)
                 ))
                 f.write("\n# {}".format(
-                    LangManager.get_lang_data()['config_last_generated_time'].format(
+                    LangManager.get_lang('config_last_generated_time').format(
                         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     )
                 ))
@@ -68,22 +68,22 @@ class ConfigGenerator:
                     f.write(f"# {prop['description']}\n")
                     if 'subtype' in prop:
                         if prop['subtype'] == 'non_empty':
-                            f.write(f"# {LangManager.get_lang_data()['config_not_empty']}\n")
+                            f.write(f"# {LangManager.get_lang('config_not_empty')}\n")
                         elif prop['subtype'] == 'option':
-                            f.write(f"# {LangManager.get_lang_data()['config_option_values'].format(', '.join(prop['options']))}\n")
+                            f.write(f"# {LangManager.get_lang('config_option_values').format(', '.join(prop['options']))}\n")
                     elif 'options' in prop:
-                        f.write(f"# {LangManager.get_lang_data()['config_option_values'].format(', '.join(prop['options']))}\n")
+                        f.write(f"# {LangManager.get_lang('config_option_values').format(', '.join(prop['options']))}\n")
                     if 'min_value' in prop and 'max_value' in prop:
-                        f.write(f"# {LangManager.get_lang_data()['config_value_range'].format(prop['min_value'], prop['max_value'])}\n")
+                        f.write(f"# {LangManager.get_lang('config_value_range').format(prop['min_value'], prop['max_value'])}\n")
                     # 写入配置项
                     f.write(f"{key} = '{value}'\n\n")
 
-            print(LangManager.get_lang_data()['config_generate_success'].format(config_path))
+            print(LangManager.get_lang('config_generate_success').format(config_path))
 
             # 按用户要求，不再自动生成所有模块配置
             # 模块配置需要单独加载
 
         except Exception as e:
-            error_msg = LangManager.get_lang_data()['config_generate_fail'].format(str(e))
+            error_msg = LangManager.get_lang('config_generate_fail').format(str(e))
             print(error_msg)
             raise Exception(error_msg)

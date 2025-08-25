@@ -120,7 +120,7 @@ class ConfigManager:
         
         # 确保模块名称有效
         if not module_name or not isinstance(module_name, str):
-            raise ValueError(LangManager.get_lang_data()['module_name_not_valid'])
+            raise ValueError(LangManager.get_lang('module_name_not_valid'))
             
         # 检查并创建ocr_modules目录
         lib_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -132,7 +132,7 @@ class ConfigManager:
                 os.makedirs(ocr_modules_dir)
                 is_newly_created = True
             except Exception as e:
-                raise Exception(LangManager.get_lang_data()['cannot_create_ocr_modules_dir'].format(str(e)))
+                raise Exception(LangManager.get_lang('cannot_create_ocr_modules_dir').format(str(e)))
                 
         # 检查并创建模块目录
         module_dir = os.path.join(ocr_modules_dir, module_name)
@@ -141,7 +141,7 @@ class ConfigManager:
                 os.makedirs(module_dir)
                 is_newly_created = True
             except Exception as e:
-                raise Exception(LangManager.get_lang_data()['cannot_create_module_dir'].format(module_name, str(e)))
+                raise Exception(LangManager.get_lang('cannot_create_module_dir').format(module_name, str(e)))
                 
         # 存入缓存
         instance._ocr_module_dir_cache[module_name] = (module_dir, is_newly_created)

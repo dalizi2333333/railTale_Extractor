@@ -109,7 +109,7 @@ class OCRModule:
             module_class = self.get_module(ConfigManager.get('OCR_MODULE', DEFAULT_MODULE_NAME))
             self.module_impl = module_class()
         except ValueError as e:
-            print(LangManager.get_lang_data()['ocr_module_load_fail'].format(ConfigManager.get('OCR_MODULE', DEFAULT_MODULE_NAME), str(e)))
+            print(LangManager.get_lang('ocr_module_load_fail').format(ConfigManager.get('OCR_MODULE', DEFAULT_MODULE_NAME), str(e)))
             self.module_impl = None
 
     def init_ocr_client(self):
