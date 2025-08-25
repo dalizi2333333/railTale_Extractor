@@ -67,7 +67,7 @@ def has_mandatory_config():
     return True
 
 
-def _download_file_from_github(github_path, local_path, download_url):
+def _download_file_from_github(github_path, local_path, download_url, default_lang_data=None):
     """从GitHub下载文件
 
     Args:
@@ -95,16 +95,45 @@ def _download_file_from_github(github_path, local_path, download_url):
             with open(local_path, 'wb') as f:
                 f.write(response.content)
 
-            print(LangManager.get_module_lang_data()['download_success'].format(local_path))
+            # 尝试使用语言数据，如果失败则使用默认文本
+            try:
+                print(LangManager.get_module_lang_data()['download_success'].format(local_path))
+            except (KeyError, Exception):
+                if default_lang_data and 'download_success' in default_lang_data:
+                    print(default_lang_data['download_success'].format(local_path))
+                else:
+                    print(f'下载成功: {local_path}')
             return True
         except requests.exceptions.RequestException as e:
             error_msg = str(e)
             if attempt < max_retries - 1:
-                print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
-                print(LangManager.get_module_lang_data()['retry_attempt'].format(attempt+1))
+                # 尝试使用语言数据，如果失败则使用默认文本
+                try:
+                    print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
+                    print(LangManager.get_module_lang_data()['retry_attempt'].format(attempt+1))
+                except (KeyError, Exception):
+                    if default_lang_data:
+                        if 'download_fail' in default_lang_data:
+                            print(default_lang_data['download_fail'].format(url, error_msg))
+                        if 'retry_attempt' in default_lang_data:
+                            print(default_lang_data['retry_attempt'].format(attempt+1))
+                    else:
+                        print(f'下载失败 ({url}): {error_msg}')
+                        print(f'重试尝试 {attempt+1}...')
             else:
-                print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
-                print(LangManager.get_module_lang_data()['max_retries_reached'].format(max_retries))
+                # 尝试使用语言数据，如果失败则使用默认文本
+                try:
+                    print(LangManager.get_module_lang_data()['download_fail'].format(url, error_msg))
+                    print(LangManager.get_module_lang_data()['max_retries_reached'].format(max_retries))
+                except (KeyError, Exception):
+                    if default_lang_data:
+                        if 'download_fail' in default_lang_data:
+                            print(default_lang_data['download_fail'].format(url, error_msg))
+                        if 'max_retries_reached' in default_lang_data:
+                            print(default_lang_data['max_retries_reached'].format(max_retries))
+                    else:
+                        print(f'下载失败 ({url}): {error_msg}')
+                        print(f'已达到最大重试次数 ({max_retries})')
     return False
 
 
@@ -214,6 +243,7 @@ def complete_module():
             if not os.path.exists(lang_file):
                 print(f'未找到语言文件: {lang_file}')
                 github_path = f'lang/{lang}.json'
+                # 传递默认语言数据给下载函数
                 if not _download_file_from_github(github_path, lang_file, download_url, default_lang_data):
                     print(f'下载语言文件失败: {lang_file}')
                     sys.exit(1)
@@ -223,15 +253,47 @@ def complete_module():
         # 加载语言数据
         LangManager.load_module_language_file(module_dir)
         # 检查并下载模块文件
-        print(LangManager.get_module_lang_data()['check_start'])
-        if not _check_module_files(module_dir, download_url):
-            print(LangManager.get_module_lang_data()['exit_due_to_download_fail'])
+        # 为check_start添加异常处理
+        try:
+            print(LangManager.get_module_lang_data()['check_start'])
+        except (KeyError, Exception):
+            if default_lang_data and 'check_start' in default_lang_data:
+                print(default_lang_data['check_start'])
+            else:
+                print('开始检查模块文件...')
+
+        if not _check_module_files(module_dir, download_url, default_lang_data):
+            # 为exit_due_to_download_fail添加异常处理
+            try:
+                print(LangManager.get_module_lang_data()['exit_due_to_download_fail'])
+            except (KeyError, Exception):
+                if default_lang_data and 'exit_due_to_download_fail' in default_lang_data:
+                    print(default_lang_data['exit_due_to_download_fail'])
+                else:
+                    print('由于文件下载失败，程序退出')
             return False
 
-        print(LangManager.get_module_lang_data()['check_complete'])
+        # 为check_complete添加异常处理
+        try:
+            print(LangManager.get_module_lang_data()['check_complete'])
+        except (KeyError, Exception):
+            if default_lang_data and 'check_complete' in default_lang_data:
+                print(default_lang_data['check_complete'])
+            else:
+                print('检查完成')
         return True
     except Exception as e:
-        print(LangManager.get_module_lang_data()['complete_fail'].format(str(e)))
+        # 为complete_fail添加异常处理和调试信息
+        try:
+            lang_data = LangManager.get_module_lang_data()
+            print(f'语言数据状态: {lang_data}')
+            if 'complete_fail' in lang_data:
+                print(lang_data['complete_fail'].format(str(e)))
+            else:
+                print(f'补全失败: {str(e)}')
+        except Exception as lang_e:
+            print(f'获取语言数据时出错: {str(lang_e)}')
+            print(f'补全失败: {str(e)}')
         return False
 
 def get_module_class():
