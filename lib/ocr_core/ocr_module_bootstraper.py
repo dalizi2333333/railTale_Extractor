@@ -158,7 +158,7 @@ class OCRModuleBootstraper:
                 return False
 
             # 构建bootstrap.py的下载URL
-            bootstrap_url = f"{download_url}/ocr_modules/{module_name}/module_bootstrap.py"
+            bootstrap_url = f"{download_url}ocr_modules/{module_name}/module_bootstrap.py"
 
             # 下载文件
             response = requests.get(bootstrap_url)

@@ -25,10 +25,6 @@ if not os.path.exists(bootstrap_path):
         with open(bootstrap_path, 'wb') as f:
             f.write(response.content)
         print(f'Successfully downloaded bootstrap.py to: {bootstrap_path}')
-        print('\nFirst download of bootstrap.py detected. To ensure successful import, please restart the program.')
-        print('Program will exit in 3 seconds...')
-        time.sleep(3)
-        sys.exit(0)
     except Exception as e:
         print(f'Failed to download bootstrap.py: {str(e)}')
         print('Program will exit.')
