@@ -1,0 +1,64 @@
+=== OCR调试信息 ===
+处理时间: 2025-08-25 15:32:51
+处理图片总数: 4
+成功处理: 1张
+失败处理: 0张
+使用字体增强: 是
+字体路径: d:\视频\一口气看完崩铁3.1到3.5剧情\基于崩坏星穹铁道游戏截图的剧情梗概提取器\example\zh-cn.ttf
+
+=== 测试OCR模块调试信息 ===
+文件名: stitched_1_4.png
+识别文本: 这是固定的测试文本
+用于调试OCR模块
+无论输入什么图片都会返回这段文字
+
+完整配置表:
+{
+  "TEST_MODE": "True",
+  "TEST_MODE_DESC": "测试模式开关，启用时使用测试OCR模块返回固定文本",
+  "USE_CUSTOM_FONT": true,
+  "CUSTOM_FONT_PATH": "d:\\视频\\一口气看完崩铁3.1到3.5剧情\\基于崩坏星穹铁道游戏截图的剧情梗概提取器\\example\\zh-cn.ttf",
+  "OCR_LANGUAGE": "zh-cn",
+  "FIND_FONTS": [
+    [
+      {
+        "file_name": "zh-cn.ttf",
+        "ocr_language": "zh-cn"
+      },
+      "d:\\视频\\一口气看完崩铁3.1到3.5剧情\\基于崩坏星穹铁道游戏截图的剧情梗概提取器\\example\\zh-cn.ttf"
+    ]
+  ],
+  "APP_CONFIG_DEFINITIONS": {
+    "error": "无法导入DefaultConfig"
+  },
+  "timestamp": "2025-08-25 15:32:51"
+}
+
+OCR选项:
+{
+  "language_type": "zh-cn",
+  "font_type": "custom",
+  "detect_direction": "true",
+  "detect_language": "true",
+  "probability": "true",
+  "paragraph": "true",
+  "accuracy": "high"
+}
+
+识别结果:
+{
+  "words_result": [
+    {
+      "words": "这是固定的测试文本"
+    },
+    {
+      "words": "用于调试OCR模块"
+    },
+    {
+      "words": "无论输入什么图片都会返回这段文字"
+    }
+  ],
+  "log_id": 123456789,
+  "words_result_num": 3
+}
+==========================

@@ -2,7 +2,6 @@ import os
 import json
 from ocr_core.ocr_module_interface import OCRModuleInterface
 from ocr_modules.baidu.debug_utils import BaiduOCRDebugUtils
-from config.config_manager import ConfigManager
 from aip import AipOcr
 from lang_manager import LangManager
 
@@ -36,6 +35,7 @@ class BaiduOCRModule(OCRModuleInterface):
 
     def init_ocr_client(self):
         """初始化百度OCR客户端和特有选项"""
+        from config.config_manager import ConfigManager
         try:
             if self.app_id is None or self.api_key is None or self.secret_key is None:
                 self.app_id = ConfigManager.get('BAIDU_APP_ID', '')
@@ -55,6 +55,7 @@ class BaiduOCRModule(OCRModuleInterface):
 
     def _init_ocr_options(self):
         """初始化百度OCR特有选项"""
+        from config.config_manager import ConfigManager
         # 获取字体增强相关配置
         use_custom_font = ConfigManager.get('USE_CUSTOM_FONT', False)
         font_path = ConfigManager.get('CUSTOM_FONT_PATH', None)

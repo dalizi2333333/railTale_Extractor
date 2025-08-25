@@ -2,7 +2,6 @@ import os
 import json
 import datetime
 from ocr_core.ocr_module_interface import OCRModuleInterface
-from config.config_manager import ConfigManager
 from lang_manager import LangManager
 
 class OCRTestModule(OCRModuleInterface):
@@ -10,11 +9,21 @@ class OCRTestModule(OCRModuleInterface):
 
     def __init__(self):
         self.last_image_path = None
-        self.last_recognized_text = "这是固定的测试文本\n用于调试OCR模块\n无论输入什么图片都会返回这段文字"
+        self.last_recognized_text = "剧情梗概\n这是固定的测试文本\n用于调试OCR模块\n无论输入什么图片都会返回这段文字\n取消"
         self.last_recognition_debug_info = {}
+        self.ocr_OCR_MODULE = None
 
     def init_ocr_client(self):
         """初始化测试OCR客户端"""
+        from config.config_manager import ConfigManager
+        self.ocr_OCR_MODULE = ConfigManager.get('OCR_MODULE')
+        
+        # 获取并打印ConfigManager中的所有实际配置项
+        from config.config_manager import ConfigManager
+        all_config = ConfigManager.get_config()
+        print("=== ConfigManager中的所有实际配置项 ===")
+        print(json.dumps(all_config, ensure_ascii=False, indent=2))
+        
         # 模拟初始化过程
         print("初始化测试OCR客户端成功")
         return True
@@ -30,21 +39,13 @@ class OCRTestModule(OCRModuleInterface):
         """
         self.last_image_path = image_path
         
-        # 获取实际配置项
-        test_mode = ConfigManager.get('TEST_MODE', False)
-        use_custom_font = ConfigManager.get('USE_CUSTOM_FONT', False)
-        custom_font_path = ConfigManager.get('CUSTOM_FONT_PATH', None)
-        ocr_language = ConfigManager.get('OCR_LANGUAGE', 'zh-cn')
-        find_fonts = ConfigManager.get('FIND_FONTS', [])
-        
-        # 尝试获取default_config.py中的配置项
-        try:
-            from lib.config.default_config import DefaultConfig
-            app_config = DefaultConfig.APP_CONFIG_DEFINITIONS
-        except ImportError:
-            app_config = {'error': '无法导入DefaultConfig'}
-        except AttributeError:
-            app_config = {'error': 'DefaultConfig中未找到APP_CONFIG_DEFINITIONS'}
+        # 确保OCR客户端已初始化
+        if not hasattr(self, '_client_initialized') or not self._client_initialized:
+            self._client_initialized = self.init_ocr_client()
+
+        # 获取ConfigManager中的所有实际配置项
+        from config.config_manager import ConfigManager
+        app_config = ConfigManager.get_config()
         
         # 检测语言文件中的'test_mode_desc'键
         test_mode_desc = LangManager.get_module_lang_data().get('test_mode_desc', '未找到test_mode_desc描述')
@@ -54,45 +55,20 @@ class OCRTestModule(OCRModuleInterface):
         
         # 收集调试信息
         self.last_recognition_debug_info = {
-            'options': {
-                'language_type': ocr_language,
-                'font_type': 'custom' if use_custom_font else 'simhei',
-                'detect_direction': 'true',
-                'detect_language': 'true',
-                'probability': 'true',
-                'paragraph': 'true',
-                'accuracy': 'high'
-            },
-            'result': {
-                'words_result': [
-                    {'words': '这是固定的测试文本'},
-                    {'words': '用于调试OCR模块'},
-                    {'words': '无论输入什么图片都会返回这段文字'}
-                ],
-                'log_id': 123456789,
-                'words_result_num': 3
-            },
             'image_path': image_path,
-            'config': {
-                'TEST_MODE': test_mode,
-                'TEST_MODE_DESC': test_mode_desc,
-                'USE_CUSTOM_FONT': use_custom_font,
-                'CUSTOM_FONT_PATH': custom_font_path,
-                'OCR_LANGUAGE': ocr_language,
-                'FIND_FONTS': find_fonts,
-                'APP_CONFIG_DEFINITIONS': app_config,
-                'timestamp': current_time
-            }
+            'config': app_config,
+            'timestamp': current_time,
+            'TEST_MODE_DESC': test_mode_desc
         }
         
-        # 打印配置项结果
-        print("=== 测试模块配置项结果 ===")
-        print(f"TEST_MODE: {test_mode}")
+        # 打印ConfigManager中的所有实际配置项
+        print("=== 测试模块使用的所有实际配置项 ===")
+        print(json.dumps(app_config, ensure_ascii=False, indent=2))
+        
+        # 打印关键配置项
+        print("=== 测试模块关键配置项 ===")
+        print(f"OCR_MODULE: {self.ocr_OCR_MODULE}")
         print(f"TEST_MODE_DESC: {test_mode_desc}")
-        print(f"USE_CUSTOM_FONT: {use_custom_font}")
-        print(f"CUSTOM_FONT_PATH: {custom_font_path}")
-        print(f"OCR_LANGUAGE: {ocr_language}")
-        print(f"FIND_FONTS: {find_fonts}")
         print(f"时间戳: {current_time}")
         print("===========================")
         
@@ -113,16 +89,14 @@ class OCRTestModule(OCRModuleInterface):
         # 生成调试信息
         debug_info = self.last_recognition_debug_info
         config_str = json.dumps(debug_info['config'], ensure_ascii=False, indent=2)
-        options_str = json.dumps(debug_info['options'], ensure_ascii=False, indent=2)
-        result_str = json.dumps(debug_info['result'], ensure_ascii=False, indent=2)
 
         debug_message = (
             f"=== 测试OCR模块调试信息 ===\n"
             f"文件名: {file_name}\n"
             f"识别文本: {self.last_recognized_text}\n\n"
             f"完整配置表:\n{config_str}\n\n"
-            f"OCR选项:\n{options_str}\n\n"
-            f"识别结果:\n{result_str}\n"
+            f"测试模式描述: {debug_info.get('TEST_MODE_DESC', '未设置')}\n"
+            f"时间戳: {debug_info.get('timestamp', '未知')}\n"
             f"=========================="
         )
 
