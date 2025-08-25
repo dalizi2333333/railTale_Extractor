@@ -1,8 +1,9 @@
 # 忽略配置文件，能自动生成
 config.txt
 
-# 忽略测试脚本
+# 忽略测试脚本和目录
 test*.py
+test*/
 # 忽略测试结果文件
 /example/example.txt
 /example/example_ocr_debug.txt

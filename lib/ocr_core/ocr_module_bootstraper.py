@@ -35,11 +35,11 @@ class OCRModuleBootstraper:
         # 获取模块目录
         module_dir, is_newly_created = ConfigManager.get_ocr_module_dir(module_name)
 
-        # 检查模块目录下是否有bootstrap.py
+        # 检查模块目录下是否有module_bootstrap.py
         bootstrap_path = os.path.join(module_dir, 'module_bootstrap.py')
         # 如果目录是新创建的，或者module_bootstrap.py不存在，则尝试下载
         if is_newly_created or not os.path.exists(bootstrap_path):
-            # 尝试下载bootstrap.py
+            # 尝试下载module_bootstrap.py
             if not self._download_bootstrap(module_name, bootstrap_path):
                 print(LangManager.get_lang_data()['module_bootstrap_missing'].format(module_name))
                 return False
